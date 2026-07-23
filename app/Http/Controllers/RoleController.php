@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreRoleRequest;
+use App\Http\Requests\UpdateRoleRequest;
 use App\Http\Resources\RoleResource;
 use App\Models\Role;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Psy\Util\Json;
 
 class RoleController extends Controller
 {
@@ -26,7 +28,7 @@ class RoleController extends Controller
      */
     public function store(StoreRoleRequest $request): JsonResponse
     {
-        $role = Role::created($request->validated());
+        $role = Role::create($request->validated());
         return (new RoleResource($role))->response()->setStatusCode(201);
     }
 
@@ -41,16 +43,18 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Role $role)
+    public function update(UpdateRoleRequest $request, Role $role): RoleResource
     {
-        //
+        $role->update($request->validated());
+        return new RoleResource($role);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Role $role)
+    public function destroy(Role $role): JsonResponse
     {
-        //
+        $role->delete();
+        return response()->json(['success' => true, 'message' => 'Rol eliminado correctamente.'], 200);
     }
 }

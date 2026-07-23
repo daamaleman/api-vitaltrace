@@ -20,4 +20,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 // Define API routes for the Role resource
-Route::apiResource('roles', RoleController::class);
+Route::apiResource('/roles', RoleController::class);
