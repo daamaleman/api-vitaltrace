@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PersonController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Define API routes for the Role resource
 Route::apiResource('/roles', RoleController::class);
+
+
+// Define API routes for the Person resource
+Route::apiResource('/people', PersonController::class);
