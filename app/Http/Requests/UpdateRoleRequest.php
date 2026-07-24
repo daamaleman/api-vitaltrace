@@ -24,8 +24,9 @@ class UpdateRoleRequest extends FormRequest
     {
         return [
             // Validation rules for updating an existing role
-            'name' => ['required', 'string', 'max:100', Rule::unique('roles')->ignore($this->role)],
-            'description' => ['nullable', 'string', 'max:255']
+            'name' => ['required', 'string', 'max:50', Rule::unique('roles')->ignore($this->role)],
+            'description' => ['nullable', 'string', 'max:255'],
+            'active' => ['sometimes', 'boolean'],
         ];
     }
 }
