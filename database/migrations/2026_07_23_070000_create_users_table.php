@@ -16,23 +16,6 @@ return new class extends Migration
 {
     /**
      * Run the migration to create the users table
-     * 
-     * Creates a users table with the following structure:
-     * - id: Primary key
-     * - person_id: Foreign key to people table
-     * - email: Unique email address for authentication
-     * - password: Hashed password field
-     * - status: Account status (PENDING, ACTIVE, BLOCKED, SUSPENDED, DEACTIVATED)
-     * - email_verified_at: Timestamp when email was verified
-     * - last_access_at: Timestamp of the last user access
-     * - failed_attempts: Counter for failed login attempts
-     * - blocked_until: Timestamp when account will be unblocked
-     * - created_at: Account creation timestamp
-     * - created_by: Foreign key to the user who created this account
-     * - updated_at: Last update timestamp
-     * - updated_by: Foreign key to the user who last updated this account
-     * - deleted_at: Soft delete timestamp
-     * - deleted_by: Foreign key to the user who deleted this account
      */
     public function up(): void
     {
@@ -70,15 +53,15 @@ return new class extends Migration
 
             // Audit trail - creation
             $table->timestamp('created_at')->useCurrent();
-            $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('created_by')->nullable();
 
             // Audit trail - update
             $table->timestamp('updated_at')->nullable();
-            $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             // Soft delete with audit trail
             $table->softDeletes();
-            $table->foreignId('deleted_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->unsignedBigInteger('deleted_by')->nullable();
         });
     }
 
