@@ -18,8 +18,18 @@ class User extends Authenticatable
     use Notifiable;
     use SoftDeletes;
 
+    /**
+     * The database table associated with the model.
+     *
+     * @var string
+     */
     protected $table = 'users';
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'person_id',
         'email',
@@ -34,11 +44,21 @@ class User extends Authenticatable
         'deleted_by',
     ];
 
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var array<int, string>
+     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'email_verified_at' => 'datetime',
         'last_access_at' => 'datetime',
@@ -50,31 +70,49 @@ class User extends Authenticatable
         'deleted_at' => 'datetime',
     ];
 
+    /**
+     * Get the person associated with the user.
+     */
     public function person(): BelongsTo
     {
         return $this->belongsTo(Person::class);
     }
 
+    /**
+     * Get the user that created this record.
+     */
     public function creator(): BelongsTo
     {
         return $this->belongsTo(self::class, 'created_by');
     }
 
+    /**
+     * Get the user that last updated this record.
+     */
     public function editor(): BelongsTo
     {
         return $this->belongsTo(self::class, 'updated_by');
     }
 
+    /**
+     * Get the user that soft deleted this record.
+     */
     public function eraser(): BelongsTo
     {
         return $this->belongsTo(self::class, 'deleted_by');
     }
 
+    /**
+     * Determine whether the user is active.
+     */
     public function isActive(): bool
     {
         return $this->status === 'ACTIVE';
     }
 
+    /**
+     * Determine whether the user is pending.
+     */
     public function isPending(): bool
     {
         return $this->status === 'PENDING';
