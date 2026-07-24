@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PersonController;
+use App\Http\Controllers\UserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,6 @@ Route::apiResource('/roles', RoleController::class);
 
 // Define API routes for the Person resource
 Route::apiResource('/people', PersonController::class);
+
+// Define API routes for the User resource
+Route::apiResource('/users', UserController::class);
