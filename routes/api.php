@@ -13,6 +13,7 @@ use App\Http\Controllers\RelativeController;
 use App\Http\Controllers\PatientRelativeController;
 use App\Http\Controllers\AdministrativeStaffController;
 use App\Http\Controllers\SpecialtyController;
+use App\Http\Controllers\HealthStaffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,36 +31,17 @@ Route::prefix('v1')->group(function () {
         return $request->user();
     });
 
-    // Define API routes for the Role resource
-    Route::apiResource('/roles', RoleController::class);
-
-    // Define API routes for the Person resource
-    Route::apiResource('/people', PersonController::class);
-
-    // Define API routes for the User resource
-    Route::apiResource('/users', UserController::class);
-
-    // Define API routes for the Permission resource
-    Route::apiResource('/permissions', PermissionController::class);
-
-    // Define API routes for the UserRole resource
-    Route::apiResource('user-roles', UserRoleController::class);
-
-    // Define API routes for the RolePermission resource
+    // Define API resource routes for various controllers
+    Route::apiResource('roles', RoleController::class);
+    Route::apiResource('permissions', PermissionController::class);
     Route::apiResource('role-permissions', RolePermissionController::class);
-
-    // Define API routes for the Patient resource
+    Route::apiResource('people', PersonController::class);
+    Route::apiResource('users', UserController::class);
+    Route::apiResource('user-roles', UserRoleController::class);
     Route::apiResource('patients', PatientController::class);
-
-    // Define API routes for the Relative resource
     Route::apiResource('relatives', RelativeController::class);
-
-    // Define API routes for the PatientRelative resource
     Route::apiResource('patient-relatives', PatientRelativeController::class);
-
-    // Define API routes for the AdministrativeStaff resource
     Route::apiResource('administrative-staff', AdministrativeStaffController::class);
-
-    // Define API routes for the Specialty resource
     Route::apiResource('specialties', SpecialtyController::class);
+    Route::apiResource('health-staff', HealthStaffController::class);
 });
