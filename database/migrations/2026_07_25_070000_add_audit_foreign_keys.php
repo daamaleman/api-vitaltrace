@@ -20,6 +20,7 @@ return new class extends Migration
         'role_permission' => ['created_by', 'updated_by'],
         'patients' => ['registered_by', 'created_by', 'updated_by', 'deleted_by'],
         'relatives' => ['created_by', 'updated_by', 'deleted_by'],
+        'patient_relative' => ['registered_by', 'authorized_by', 'created_by', 'updated_by', 'deleted_by'],
     ];
 
     public function up(): void
