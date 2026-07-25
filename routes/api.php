@@ -10,6 +10,7 @@ use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RelativeController;
+use App\Http\Controllers\PatientRelativeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,4 +51,7 @@ Route::prefix('v1')->group(function () {
 
     // Define API routes for the Relative resource
     Route::apiResource('relatives', RelativeController::class);
+
+    // Define API routes for the PatientRelative resource
+    Route::apiResource('patient-relatives', PatientRelativeController::class);
 });
