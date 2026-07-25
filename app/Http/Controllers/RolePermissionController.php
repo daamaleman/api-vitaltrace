@@ -1,49 +1,65 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreRolePermissionRequest;
+use App\Http\Requests\UpdateRolePermissionRequest;
+use App\Http\Resources\RolePermissionResource;
 use App\Models\RolePermission;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
 class RolePermissionController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        //
+        $rolePermissions = RolePermission::latest('id')->paginate(15);
+
+        return RolePermissionResource::collection($rolePermissions);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
+    public function store(StoreRolePermissionRequest $request): JsonResponse
     {
-        //
+        $rolePermission = RolePermission::create($request->validated());
+
+        return response()->json([
+            'data' => new RolePermissionResource($rolePermission->load(['role', 'permission'])),
+            'message' => 'Permission assigned to role successfully.',
+            'errors' => null,
+        ], Response::HTTP_CREATED);
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(RolePermission $rolePermission)
+    public function show(RolePermission $rolePermission): JsonResponse
     {
-        //
+        return response()->json([
+            'data' => new RolePermissionResource($rolePermission->load(['role', 'permission'])),
+            'message' => null,
+            'errors' => null,
+        ], Response::HTTP_OK);
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, RolePermission $rolePermission)
+    public function update(UpdateRolePermissionRequest $request, RolePermission $rolePermission): JsonResponse
     {
-        //
+        $rolePermission->update($request->validated());
+
+        return response()->json([
+            'data' => new RolePermissionResource($rolePermission->load(['role', 'permission'])),
+            'message' => 'Role permission updated successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(RolePermission $rolePermission)
+    public function destroy(RolePermission $rolePermission): JsonResponse
     {
-        //
+        $rolePermission->delete();
+
+        return response()->json([
+            'data' => null,
+            'message' => 'Role permission removed successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
     }
 }
