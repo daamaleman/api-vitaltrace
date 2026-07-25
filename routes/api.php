@@ -8,6 +8,8 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\UserRoleController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\PatientController;
+use App\Http\Controllers\RelativeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -42,4 +44,10 @@ Route::prefix('v1')->group(function () {
 
     // Define API routes for the RolePermission resource
     Route::apiResource('role-permissions', RolePermissionController::class);
+
+    // Define API routes for the Patient resource
+    Route::apiResource('patients', PatientController::class);
+
+    // Define API routes for the Relative resource
+    Route::apiResource('relatives', RelativeController::class);
 });
