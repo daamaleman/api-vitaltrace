@@ -16,6 +16,8 @@ return new class extends Migration
         'people' => ['created_by', 'updated_by', 'deleted_by'],
         'users' => ['created_by', 'updated_by', 'deleted_by'],
         'user_role' => ['assigned_by'],
+        'permissions' => ['created_by', 'updated_by'],
+        'role_permission' => ['created_by', 'updated_by'],
     ];
 
     public function up(): void
