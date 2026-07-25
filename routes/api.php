@@ -11,6 +11,7 @@ use App\Http\Controllers\RolePermissionController;
 use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RelativeController;
 use App\Http\Controllers\PatientRelativeController;
+use App\Http\Controllers\AdministrativeStaffController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,4 +55,7 @@ Route::prefix('v1')->group(function () {
 
     // Define API routes for the PatientRelative resource
     Route::apiResource('patient-relatives', PatientRelativeController::class);
+
+    // Define API routes for the AdministrativeStaff resource
+    Route::apiResource('administrative-staff', AdministrativeStaffController::class);
 });
