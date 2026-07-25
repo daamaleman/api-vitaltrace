@@ -52,7 +52,7 @@ return new class extends Migration
             $table->date('end_date')->nullable();
 
             // Audit fields for tracking authorization
-            $table->unsignedBigInteger('registered_by');
+            $table->unsignedBigInteger('registered_by')->nullable();
             $table->unsignedBigInteger('authorized_by')->nullable();
 
             // Composite unique constraint to prevent duplicate relationships
