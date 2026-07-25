@@ -6,6 +6,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\UserRoleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,4 +35,7 @@ Route::prefix('v1')->group(function () {
 
     // Define API routes for the Permission resource
     Route::apiResource('/permissions', PermissionController::class);
+
+    // Define API routes for the UserRole resource
+    Route::apiResource('user-roles', UserRoleController::class);
 });
