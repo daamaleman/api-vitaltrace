@@ -9,41 +9,89 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration
 {
     /**
+     * NOT NULL columns referencing users → restrictOnDelete.
+     *
      * @var array<string, array<int, string>>
      */
-    private array $auditColumns = [
+    private array $restrictColumns = [
+        'patients' => ['registered_by'],
+        'patient_relative' => ['registered_by'],
+    ];
+
+    /**
+     * Nullable columns referencing users → nullOnDelete.
+     *
+     * @var array<string, array<int, string>>
+     */
+    private array $nullableColumns = [
         'roles' => ['created_by', 'updated_by'],
         'people' => ['created_by', 'updated_by', 'deleted_by'],
         'users' => ['created_by', 'updated_by', 'deleted_by'],
         'user_role' => ['assigned_by'],
         'permissions' => ['created_by', 'updated_by'],
         'role_permission' => ['created_by', 'updated_by'],
-        'patients' => ['registered_by', 'created_by', 'updated_by', 'deleted_by'],
+        'patients' => ['created_by', 'updated_by', 'deleted_by'],
         'relatives' => ['created_by', 'updated_by', 'deleted_by'],
-        'patient_relative' => ['registered_by', 'authorized_by', 'created_by', 'updated_by', 'deleted_by'],
+        'patient_relative' => ['authorized_by', 'created_by', 'updated_by', 'deleted_by'],
         'administrative_staff' => ['created_by', 'updated_by', 'deleted_by'],
+        'specialties' => ['created_by', 'updated_by'],
     ];
 
     public function up(): void
     {
-        foreach ($this->auditColumns as $tableName => $columns) {
-            Schema::table($tableName, function (Blueprint $table) use ($columns) {
+        $this->applyForeignKeys($this->restrictColumns, 'restrict');
+        $this->applyForeignKeys($this->nullableColumns, 'null');
+    }
+
+    public function down(): void
+    {
+        $this->dropForeignKeys($this->restrictColumns);
+        $this->dropForeignKeys($this->nullableColumns);
+    }
+
+    /**
+     * @param  array<string, array<int, string>>  $map
+     */
+    private function applyForeignKeys(array $map, string $onDelete): void
+    {
+        foreach ($map as $tableName => $columns) {
+            if (! Schema::hasTable($tableName)) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) use ($tableName, $columns, $onDelete) {
                 foreach ($columns as $column) {
-                    $table->foreign($column)->references('id')->on('users')->nullOnDelete();
+                    if (! Schema::hasColumn($tableName, $column)) {
+                        continue;
+                    }
+
+                    $foreign = $table->foreign($column)->references('id')->on('users');
+
+                    if ($onDelete === 'restrict') {
+                        $foreign->restrictOnDelete();
+                    } else {
+                        $foreign->nullOnDelete();
+                    }
                 }
             });
         }
     }
 
     /**
-     * Reverse the migrations.
+     * @param  array<string, array<int, string>>  $map
      */
-    public function down(): void
+    private function dropForeignKeys(array $map): void
     {
-        foreach ($this->auditColumns as $tableName => $columns) {
-            Schema::table($tableName, function (Blueprint $table) use ($columns) {
+        foreach ($map as $tableName => $columns) {
+            if (! Schema::hasTable($tableName)) {
+                continue;
+            }
+
+            Schema::table($tableName, function (Blueprint $table) use ($tableName, $columns) {
                 foreach ($columns as $column) {
-                    $table->dropForeign([$column]);
+                    if (Schema::hasColumn($tableName, $column)) {
+                        $table->dropForeign([$column]);
+                    }
                 }
             });
         }
