@@ -61,7 +61,7 @@ return new class extends Migration
             $table->text('administrative_notes')->nullable();
 
             // User ID of the person who registered the patient
-            $table->unsignedBigInteger('registered_by');
+            $table->unsignedBigInteger('registered_by')->nullable();
 
             // Audit timestamps and user tracking
             $table->timestamp('created_at')->useCurrent();
