@@ -12,6 +12,7 @@ use App\Http\Controllers\PatientController;
 use App\Http\Controllers\RelativeController;
 use App\Http\Controllers\PatientRelativeController;
 use App\Http\Controllers\AdministrativeStaffController;
+use App\Http\Controllers\SpecialtyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,4 +59,7 @@ Route::prefix('v1')->group(function () {
 
     // Define API routes for the AdministrativeStaff resource
     Route::apiResource('administrative-staff', AdministrativeStaffController::class);
+
+    // Define API routes for the Specialty resource
+    Route::apiResource('specialties', SpecialtyController::class);
 });
