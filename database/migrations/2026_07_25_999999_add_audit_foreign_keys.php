@@ -35,6 +35,7 @@ return new class extends Migration
         'patient_relative' => ['authorized_by', 'created_by', 'updated_by', 'deleted_by'],
         'administrative_staff' => ['created_by', 'updated_by', 'deleted_by'],
         'specialties' => ['created_by', 'updated_by'],
+        'health_staff' => ['created_by', 'updated_by', 'deleted_by'],
     ];
 
     public function up(): void
