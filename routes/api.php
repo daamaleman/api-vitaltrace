@@ -24,6 +24,7 @@ use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\TreatmentMedicationController;
 use App\Http\Controllers\MeasurementTypeController;
 use App\Http\Controllers\MeasurementController;
+use App\Http\Controllers\ClinicalRangeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -64,4 +65,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('treatment-medications', TreatmentMedicationController::class);
     Route::apiResource('measurement-types', MeasurementTypeController::class);
     Route::apiResource('measurements', MeasurementController::class);
+    Route::apiResource('clinical-ranges', ClinicalRangeController::class);
 });
