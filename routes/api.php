@@ -16,6 +16,7 @@ use App\Http\Controllers\SpecialtyController;
 use App\Http\Controllers\HealthStaffController;
 use App\Http\Controllers\ProfessionalAssignmentController;
 use App\Http\Controllers\AccountActivationController;
+use App\Http\Controllers\CorrectionRequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -48,4 +49,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('health-staff', HealthStaffController::class);
     Route::apiResource('professional-assignments', ProfessionalAssignmentController::class);
     Route::apiResource('account-activations', AccountActivationController::class);
+    Route::apiResource('correction-requests', CorrectionRequestController::class);
 });
