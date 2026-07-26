@@ -1,49 +1,83 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreHealthStaffRequest;
+use App\Http\Requests\UpdateHealthStaffRequest;
+use App\Http\Resources\HealthStaffResource;
 use App\Models\HealthStaff;
-use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 
+/**
+ * CRUD endpoints for health professionals (doctors and nurses).
+ */
 class HealthStaffController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * List paginated health staff with their person and specialty.
      */
-    public function index()
+    public function index(): AnonymousResourceCollection
     {
-        //
+        $healthStaff = HealthStaff::latest('id')->paginate(15);
+
+        return HealthStaffResource::collection($healthStaff);
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Register a new health professional.
      */
-    public function store(Request $request)
+    public function store(StoreHealthStaffRequest $request): JsonResponse
     {
-        //
+        $healthStaff = HealthStaff::create($request->validated());
+
+        return response()->json([
+            'data' => new HealthStaffResource($healthStaff->load(['person', 'specialty'])),
+            'message' => 'Health staff registered successfully.',
+            'errors' => null,
+        ], Response::HTTP_CREATED);
     }
 
     /**
-     * Display the specified resource.
+     * Show a single health professional.
      */
-    public function show(HealthStaff $healthStaff)
+    public function show(HealthStaff $healthStaff): JsonResponse
     {
-        //
+        return response()->json([
+            'data' => new HealthStaffResource($healthStaff->load(['person', 'specialty'])),
+            'message' => null,
+            'errors' => null,
+        ], Response::HTTP_OK);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update an existing health professional.
      */
-    public function update(Request $request, HealthStaff $healthStaff)
+    public function update(UpdateHealthStaffRequest $request, HealthStaff $healthStaff): JsonResponse
     {
-        //
+        $healthStaff->update($request->validated());
+
+        return response()->json([
+            'data' => new HealthStaffResource($healthStaff->load(['person', 'specialty'])),
+            'message' => 'Health staff updated successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Soft-delete a health professional.
      */
-    public function destroy(HealthStaff $healthStaff)
+    public function destroy(HealthStaff $healthStaff): JsonResponse
     {
-        //
+        $healthStaff->delete();
+
+        return response()->json([
+            'data' => null,
+            'message' => 'Health staff removed successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
     }
 }
