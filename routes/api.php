@@ -20,6 +20,7 @@ use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Controllers\DiagnosisController;
 use App\Http\Controllers\ClinicalEvolutionController;
 use App\Http\Controllers\TreatmentController;
+use App\Http\Controllers\MedicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,4 +57,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('diagnoses', DiagnosisController::class);
     Route::apiResource('clinical-evolutions', ClinicalEvolutionController::class);
     Route::apiResource('treatments', TreatmentController::class);
+    Route::apiResource('medications', MedicationController::class);
 });
