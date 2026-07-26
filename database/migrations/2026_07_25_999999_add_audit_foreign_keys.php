@@ -49,6 +49,7 @@ return new class extends Migration
         'treatments' => ['created_by', 'updated_by', 'deleted_by'],
         'medications' => ['created_by', 'updated_by'],
         'treatment_medication' => ['created_by', 'updated_by', 'deleted_by'],
+        'measurement_types' => ['created_by', 'updated_by'],
     ];
 
     public function up(): void
