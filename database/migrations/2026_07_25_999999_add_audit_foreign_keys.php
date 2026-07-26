@@ -16,7 +16,8 @@ return new class extends Migration
     private array $restrictColumns = [
         'patients' => ['registered_by'],
         'patient_relative' => ['registered_by'],
-        'professional_assignments' => ['assigned_by']
+        'professional_assignments' => ['assigned_by'],
+        'correction_requests' => ['requested_by']
     ];
 
     /**
@@ -38,7 +39,8 @@ return new class extends Migration
         'specialties' => ['created_by', 'updated_by'],
         'health_staff' => ['created_by', 'updated_by', 'deleted_by'],
         'professional_assignments' => ['created_by', 'updated_by', 'deleted_by'],
-        'account_activations' => ['created_by', 'updated_by']
+        'account_activations' => ['created_by', 'updated_by'],
+        'correction_requests' => ['reviewed_by', 'created_by', 'updated_by']
     ];
 
     public function up(): void
