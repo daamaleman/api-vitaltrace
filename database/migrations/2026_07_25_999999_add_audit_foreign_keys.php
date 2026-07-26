@@ -37,7 +37,8 @@ return new class extends Migration
         'administrative_staff' => ['created_by', 'updated_by', 'deleted_by'],
         'specialties' => ['created_by', 'updated_by'],
         'health_staff' => ['created_by', 'updated_by', 'deleted_by'],
-        'professional_assignments' => ['created_by', 'updated_by', 'deleted_by']
+        'professional_assignments' => ['created_by', 'updated_by', 'deleted_by'],
+        'account_activations' => ['created_by', 'updated_by']
     ];
 
     public function up(): void
