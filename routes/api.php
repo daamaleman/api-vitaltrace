@@ -23,6 +23,7 @@ use App\Http\Controllers\TreatmentController;
 use App\Http\Controllers\MedicationController;
 use App\Http\Controllers\TreatmentMedicationController;
 use App\Http\Controllers\MeasurementTypeController;
+use App\Http\Controllers\MeasurementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -62,4 +63,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('medications', MedicationController::class);
     Route::apiResource('treatment-medications', TreatmentMedicationController::class);
     Route::apiResource('measurement-types', MeasurementTypeController::class);
+    Route::apiResource('measurements', MeasurementController::class);
 });
