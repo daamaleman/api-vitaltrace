@@ -22,6 +22,7 @@ return new class extends Migration
         'clinical_evolutions' => ['registered_by'],
         'treatments' => ['prescribed_by'],
         'measurements' => ['author_user_id'],
+        'clinical_ranges' => ['defined_by'],
     ];
 
     /**
@@ -52,6 +53,7 @@ return new class extends Migration
         'treatment_medication' => ['created_by', 'updated_by', 'deleted_by'],
         'measurement_types' => ['created_by', 'updated_by'],
         'measurements' => ['created_by', 'updated_by', 'deleted_by'],
+        'clinical_ranges' => ['created_by', 'updated_by', 'deleted_by'],
     ];
 
     public function up(): void
