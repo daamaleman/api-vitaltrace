@@ -19,7 +19,8 @@ return new class extends Migration
         'professional_assignments' => ['assigned_by'],
         'correction_requests' => ['requested_by'],
         'diagnoses' => ['registered_by'],
-        'clinical_evolutions' => ['registered_by']
+        'clinical_evolutions' => ['registered_by'],
+        'treatments' => ['prescribed_by'],
     ];
 
     /**
@@ -44,7 +45,8 @@ return new class extends Migration
         'account_activations' => ['created_by', 'updated_by'],
         'correction_requests' => ['reviewed_by', 'created_by', 'updated_by'],
         'diagnoses' => ['created_by', 'updated_by', 'deleted_by'],
-        'clinical_evolutions' => ['created_by', 'updated_by', 'deleted_by']
+        'clinical_evolutions' => ['created_by', 'updated_by', 'deleted_by'],
+        'treatments' => ['created_by', 'updated_by', 'deleted_by'],
     ];
 
     public function up(): void
