@@ -23,6 +23,7 @@ return new class extends Migration
         'treatments' => ['prescribed_by'],
         'measurements' => ['author_user_id'],
         'clinical_ranges' => ['defined_by'],
+        'alert_history' => ['user_id'],
     ];
 
     /**
