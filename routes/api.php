@@ -28,10 +28,13 @@ use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\ClinicalRangeController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\AlertActionController;
 use App\Http\Controllers\AlertHistoryController;
 use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
 use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\Portal\PatientPortalController;
+use App\Http\Controllers\Portal\PatientRelativeAccessController;
 use Illuminate\Http\Request;
 
 /*
@@ -57,6 +60,34 @@ Route::prefix('v1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('auth/me', [AuthController::class, 'me']);
         Route::post('auth/logout', [AuthController::class, 'logout']);
+
+        // Patient self-service portal: reads and writes scoped to own record.
+        Route::middleware('role:PATIENT')->prefix('patient')->group(function () {
+            // Reads.
+            Route::get('summary', [PatientPortalController::class, 'summary']);
+            Route::get('appointments', [PatientPortalController::class, 'appointments']);
+            Route::get('measurements', [PatientPortalController::class, 'measurements']);
+            Route::get('treatments', [PatientPortalController::class, 'treatments']);
+
+            // Writes.
+            Route::post('measurements', [PatientPortalController::class, 'storeMeasurement']);
+            Route::post('correction-requests', [PatientPortalController::class, 'storeCorrectionRequest']);
+
+            // Relative access management by the patient.
+            Route::get('relatives', [PatientRelativeAccessController::class, 'index']);
+            Route::put('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'authorize']);
+            Route::delete('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'revoke']);
+        });
+
+        // Alert workflow: nurses and doctors classify/escalate; only doctors close.
+        Route::middleware('role:DOCTOR,NURSE')->group(function () {
+            Route::post('alerts/{alert}/classify', [AlertActionController::class, 'classify']);
+            Route::post('alerts/{alert}/escalate', [AlertActionController::class, 'escalate']);
+        });
+
+        Route::middleware('role:DOCTOR')->group(function () {
+            Route::post('alerts/{alert}/close', [AlertActionController::class, 'close']);
+        });
     });
 
     // Define API resource routes for various controllers
