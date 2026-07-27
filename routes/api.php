@@ -27,6 +27,7 @@ use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\ClinicalRangeController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AlertController;
+use App\Http\Controllers\AlertHistoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,4 +71,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('clinical-ranges', ClinicalRangeController::class);
     Route::apiResource('appointments', AppointmentController::class);
     Route::apiResource('alerts', AlertController::class);
+    Route::apiResource('alert-history', AlertHistoryController::class)->only(['index', 'store', 'show']);
 });
