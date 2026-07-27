@@ -55,6 +55,7 @@ return new class extends Migration
         'measurements' => ['created_by', 'updated_by', 'deleted_by'],
         'clinical_ranges' => ['created_by', 'updated_by', 'deleted_by'],
         'appointments' => ['created_by', 'updated_by', 'deleted_by'],
+        'alerts' => ['created_by', 'updated_by', 'deleted_by'],
     ];
 
     public function up(): void
