@@ -59,6 +59,7 @@ return new class extends Migration
         'appointments' => ['created_by', 'updated_by', 'deleted_by'],
         'alerts' => ['created_by', 'updated_by', 'deleted_by'],
         'notifications' => ['created_by', 'updated_by'],
+        'audit_logs' => ['user_id']
     ];
 
     public function up(): void
