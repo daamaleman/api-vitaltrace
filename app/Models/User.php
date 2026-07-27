@@ -112,6 +112,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the relative profile associated with the user.
+     */
+    public function relative(): BelongsTo
+    {
+        return $this->belongsTo(Relative::class);
+    }
+
+    /**
      * Determine whether a doctor or nurse has an active assignment for a patient (RN-06).
      *
      * System admins and admission are handled by role gates, not by this relation.
@@ -122,6 +130,20 @@ class User extends Authenticatable
             ->where('patient_id', $patientId)
             ->where('status', 'ACTIVE')
             ->whereHas('healthStaff', function ($query): void {
+                $query->where('person_id', $this->person_id);
+            })
+            ->exists();
+    }
+
+    /**
+     * Determine whether the user has an active relative access relationship for a patient.
+     */
+    public function hasActiveAccessToPatient(int $patientId): bool
+    {
+        return \App\Models\PatientRelative::query()
+            ->where('patient_id', $patientId)
+            ->whereIn('status', \App\Models\PatientRelative::ACTIVE_STATUSES)
+            ->whereHas('relative', function ($query): void {
                 $query->where('person_id', $this->person_id);
             })
             ->exists();

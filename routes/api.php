@@ -75,7 +75,7 @@ Route::prefix('v1')->group(function () {
 
             // Relative access management by the patient.
             Route::get('relatives', [PatientRelativeAccessController::class, 'index']);
-            Route::put('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'authorize']);
+            Route::put('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'grant']);
             Route::delete('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'revoke']);
         });
 
