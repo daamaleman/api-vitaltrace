@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -100,6 +101,36 @@ class User extends Authenticatable
     public function eraser(): BelongsTo
     {
         return $this->belongsTo(self::class, 'deleted_by');
+    }
+
+    /**
+     * Roles currently assigned to the user through the user_role pivot.
+     *
+     * Only active pivot rows are considered, so revoked roles do not grant access.
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_role')
+            ->withPivot(['active', 'assigned_at', 'revoked_at'])
+            ->wherePivot('active', true);
+    }
+
+    /**
+     * Determine whether the user has the given role by name.
+     */
+    public function hasRole(string $roleName): bool
+    {
+        return $this->roles->contains('name', $roleName);
+    }
+
+    /**
+     * Determine whether the user has any of the given roles.
+     *
+     * @param  array<int, string>  $roleNames
+     */
+    public function hasAnyRole(array $roleNames): bool
+    {
+        return $this->roles->pluck('name')->intersect($roleNames)->isNotEmpty();
     }
 
     /**
