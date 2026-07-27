@@ -26,6 +26,7 @@ use App\Http\Controllers\MeasurementTypeController;
 use App\Http\Controllers\MeasurementController;
 use App\Http\Controllers\ClinicalRangeController;
 use App\Http\Controllers\AppointmentController;
+use App\Http\Controllers\AlertController;
 
 /*
 |--------------------------------------------------------------------------
@@ -68,4 +69,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('measurements', MeasurementController::class);
     Route::apiResource('clinical-ranges', ClinicalRangeController::class);
     Route::apiResource('appointments', AppointmentController::class);
+    Route::apiResource('alerts', AlertController::class);
 });
