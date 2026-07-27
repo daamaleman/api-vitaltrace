@@ -60,35 +60,48 @@ Route::prefix('v1')->group(function () {
     });
 
     // Define API resource routes for various controllers
-    Route::apiResource('roles', RoleController::class);
-    Route::apiResource('permissions', PermissionController::class);
-    Route::apiResource('role-permissions', RolePermissionController::class);
+    // People catalog: shared read for staff, managed by admission/admin.
     Route::apiResource('people', PersonController::class);
-    Route::apiResource('users', UserController::class);
-    Route::apiResource('user-roles', UserRoleController::class);
-    Route::apiResource('patients', PatientController::class);
-    Route::apiResource('relatives', RelativeController::class);
-    Route::apiResource('patient-relatives', PatientRelativeController::class);
-    Route::apiResource('administrative-staff', AdministrativeStaffController::class);
-    Route::apiResource('specialties', SpecialtyController::class);
-    Route::apiResource('health-staff', HealthStaffController::class);
-    Route::apiResource('professional-assignments', ProfessionalAssignmentController::class);
-    Route::apiResource('account-activations', AccountActivationController::class);
-    Route::apiResource('correction-requests', CorrectionRequestController::class);
-    Route::apiResource('diagnoses', DiagnosisController::class);
-    Route::apiResource('clinical-evolutions', ClinicalEvolutionController::class);
-    Route::apiResource('treatments', TreatmentController::class);
-    Route::apiResource('medications', MedicationController::class);
-    Route::apiResource('treatment-medications', TreatmentMedicationController::class);
-    Route::apiResource('measurement-types', MeasurementTypeController::class);
-    Route::apiResource('measurements', MeasurementController::class);
-    Route::apiResource('clinical-ranges', ClinicalRangeController::class);
-    Route::apiResource('appointments', AppointmentController::class);
-    Route::apiResource('alerts', AlertController::class);
-    Route::apiResource('alert-history', AlertHistoryController::class)->only(['index', 'store', 'show']);
-    Route::apiResource('notifications', AppNotificationController::class)->parameters([
-        'notifications' => 'notification',
-    ]);
-    Route::apiResource('integration-logs', IntegrationLogController::class)->only(['index', 'store', 'show']);
-    Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'store', 'show']);
+
+    // Admission-only administrative management.
+    Route::middleware('role:ADMISSION')->group(function () {
+        Route::apiResource('patients', PatientController::class);
+        Route::apiResource('relatives', RelativeController::class);
+        Route::apiResource('patient-relatives', PatientRelativeController::class);
+        Route::apiResource('professional-assignments', ProfessionalAssignmentController::class);
+        Route::apiResource('correction-requests', CorrectionRequestController::class);
+    });
+
+    // Clinical work for doctors and nurses.
+    Route::middleware('role:DOCTOR,NURSE')->group(function () {
+        Route::apiResource('diagnoses', DiagnosisController::class);
+        Route::apiResource('clinical-evolutions', ClinicalEvolutionController::class);
+        Route::apiResource('treatments', TreatmentController::class);
+        Route::apiResource('treatment-medications', TreatmentMedicationController::class);
+        Route::apiResource('measurements', MeasurementController::class);
+        Route::apiResource('clinical-ranges', ClinicalRangeController::class);
+        Route::apiResource('appointments', AppointmentController::class);
+        Route::apiResource('alerts', AlertController::class);
+        Route::apiResource('alert-history', AlertHistoryController::class)->only(['index', 'store', 'show']);
+    });
+
+    // System administration and catalogs.
+    Route::middleware('role:SYSTEM_ADMIN')->group(function () {
+        Route::apiResource('roles', RoleController::class);
+        Route::apiResource('permissions', PermissionController::class);
+        Route::apiResource('role-permissions', RolePermissionController::class);
+        Route::apiResource('users', UserController::class);
+        Route::apiResource('user-roles', UserRoleController::class);
+        Route::apiResource('administrative-staff', AdministrativeStaffController::class);
+        Route::apiResource('specialties', SpecialtyController::class);
+        Route::apiResource('health-staff', HealthStaffController::class);
+        Route::apiResource('medications', MedicationController::class);
+        Route::apiResource('measurement-types', MeasurementTypeController::class);
+        Route::apiResource('account-activations', AccountActivationController::class);
+        Route::apiResource('notifications', AppNotificationController::class)->parameters([
+            'notifications' => 'notification',
+        ]);
+        Route::apiResource('integration-logs', IntegrationLogController::class)->only(['index', 'store', 'show']);
+        Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'store', 'show']);
+    });
 });
