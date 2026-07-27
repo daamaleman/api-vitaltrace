@@ -11,7 +11,7 @@ class UpdateCorrectionRequestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class UpdateCorrectionRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'field' => ['sometimes', 'string', 'max:100'],
+            'current_value' => ['sometimes', 'string', 'max:255'],
+            'requested_value' => ['sometimes', 'string', 'max:255'],
+            'reason' => ['sometimes', 'string', 'max:1000'],
+            'status' => ['sometimes', 'string', 'max:30'],
+            'response' => ['sometimes', 'nullable', 'string'],
         ];
     }
 }

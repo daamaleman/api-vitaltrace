@@ -104,6 +104,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the patient profile associated with the user.
+     */
+    public function patient(): BelongsTo
+    {
+        return $this->belongsTo(Patient::class);
+    }
+
+    /**
      * Determine whether a doctor or nurse has an active assignment for a patient (RN-06).
      *
      * System admins and admission are handled by role gates, not by this relation.
