@@ -30,6 +30,7 @@ use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AlertHistoryController;
 use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
+use App\Http\Controllers\AuditLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -78,4 +79,5 @@ Route::prefix('v1')->group(function () {
         'notifications' => 'notification',
     ]);
     Route::apiResource('integration-logs', IntegrationLogController::class)->only(['index', 'store', 'show']);
+    Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'store', 'show']);
 });
