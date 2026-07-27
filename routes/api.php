@@ -1,7 +1,8 @@
 <?php
 
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Auth\ActivationController;
+use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\UserController;
@@ -31,6 +32,7 @@ use App\Http\Controllers\AlertHistoryController;
 use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
 use App\Http\Controllers\AuditLogController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -44,8 +46,17 @@ use App\Http\Controllers\AuditLogController;
 */
 
 Route::prefix('v1')->group(function () {
-    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-        return $request->user();
+    // Public authentication and activation, rate-limited against brute force.
+    Route::middleware('throttle:6,1')->group(function () {
+        Route::post('auth/login', [AuthController::class, 'login']);
+        Route::post('auth/activate-account', [ActivationController::class, 'activate']);
+        Route::post('auth/resend-code', [ActivationController::class, 'resend']);
+    });
+
+    // Authenticated session.
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('auth/me', [AuthController::class, 'me']);
+        Route::post('auth/logout', [AuthController::class, 'logout']);
     });
 
     // Define API resource routes for various controllers
