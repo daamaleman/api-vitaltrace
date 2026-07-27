@@ -24,6 +24,7 @@ return new class extends Migration
         'measurements' => ['author_user_id'],
         'clinical_ranges' => ['defined_by'],
         'alert_history' => ['user_id'],
+        'notifications' => ['user_id'],
     ];
 
     /**
@@ -57,6 +58,7 @@ return new class extends Migration
         'clinical_ranges' => ['created_by', 'updated_by', 'deleted_by'],
         'appointments' => ['created_by', 'updated_by', 'deleted_by'],
         'alerts' => ['created_by', 'updated_by', 'deleted_by'],
+        'notifications' => ['created_by', 'updated_by'],
     ];
 
     public function up(): void
