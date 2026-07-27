@@ -104,6 +104,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Determine whether a doctor or nurse has an active assignment for a patient (RN-06).
+     *
+     * System admins and admission are handled by role gates, not by this relation.
+     */
+    public function isAssignedToPatient(int $patientId): bool
+    {
+        return \App\Models\ProfessionalAssignment::query()
+            ->where('patient_id', $patientId)
+            ->where('status', 'ACTIVE')
+            ->whereHas('healthStaff', function ($query): void {
+                $query->where('person_id', $this->person_id);
+            })
+            ->exists();
+    }
+
+    /**
      * Roles currently assigned to the user through the user_role pivot.
      *
      * Only active pivot rows are considered, so revoked roles do not grant access.
