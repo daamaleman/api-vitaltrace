@@ -29,6 +29,7 @@ use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AlertHistoryController;
 use App\Http\Controllers\AppNotificationController;
+use App\Http\Controllers\IntegrationLogController;
 
 /*
 |--------------------------------------------------------------------------
@@ -76,4 +77,5 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('notifications', AppNotificationController::class)->parameters([
         'notifications' => 'notification',
     ]);
+    Route::apiResource('integration-logs', IntegrationLogController::class)->only(['index', 'store', 'show']);
 });
