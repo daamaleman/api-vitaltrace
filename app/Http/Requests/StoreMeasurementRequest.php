@@ -27,13 +27,10 @@ class StoreMeasurementRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'patient_id' => ['required', 'integer', 'exists:patients,id'],
             'measurement_type_id' => ['required', 'integer', 'exists:measurement_types,id'],
             'value' => ['required', 'numeric'],
             'unit' => ['required', 'string', 'max:30'],
             'measured_at' => ['required', 'date'],
-            'origin' => ['required', 'string', 'in:PATIENT,RELATIVE,DOCTOR,NURSE'],
-            'author_user_id' => ['required', 'integer', 'exists:users,id'],
             'observation' => ['nullable', 'string'],
         ];
     }

@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -106,17 +107,17 @@ class User extends Authenticatable
     /**
      * Get the patient profile associated with the user.
      */
-    public function patient(): BelongsTo
+    public function patient(): HasOne
     {
-        return $this->belongsTo(Patient::class);
+        return $this->hasOne(Patient::class, 'person_id', 'person_id');
     }
 
     /**
      * Get the relative profile associated with the user.
      */
-    public function relative(): BelongsTo
+    public function relative(): HasOne
     {
-        return $this->belongsTo(Relative::class);
+        return $this->hasOne(Relative::class, 'person_id', 'person_id');
     }
 
     /**
