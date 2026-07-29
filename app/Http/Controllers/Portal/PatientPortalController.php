@@ -7,12 +7,14 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ListPatientAppointmentsRequest;
 use App\Http\Requests\ListPatientMeasurementsRequest;
+use App\Http\Requests\ListPatientTreatmentsRequest;
 use App\Http\Requests\StoreCorrectionRequestRequest;
 use App\Http\Requests\StoreMeasurementRequest;
 use App\Http\Resources\CorrectionRequestResource;
 use App\Http\Resources\AppointmentSummaryResource;
 use App\Http\Resources\MeasurementResource;
 use App\Http\Resources\PatientSummaryResource;
+use App\Http\Resources\PatientTreatmentResource;
 use App\Http\Resources\TreatmentResource;
 use App\Models\Alert;
 use App\Models\Appointment;
@@ -26,6 +28,38 @@ use Illuminate\Http\Response;
 
 class PatientPortalController extends Controller
 {
+    /**
+     * List the authenticated patient's treatments, newest first.
+     */
+    public function treatments(ListPatientTreatmentsRequest $request): AnonymousResourceCollection|JsonResponse
+    {
+        $patient = $request->user()->patient;
+
+        if ($patient === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No patient profile is associated with this account.',
+                'errors' => null,
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $filters = $request->validated();
+
+        $treatments = Treatment::query()
+            ->with(['diagnosis', 'prescribedBy.person', 'prescribedBy.healthStaff.specialty'])
+            ->where('patient_id', $patient->id)
+            ->when(isset($filters['status']), fn ($query) => $query->where('status', $filters['status']))
+            ->when(isset($filters['date_from']), fn ($query) => $query->whereDate('start_date', '>=', $filters['date_from']))
+            ->when(isset($filters['date_to']), fn ($query) => $query->whereDate('start_date', '<=', $filters['date_to']))
+            ->when((bool) ($filters['active'] ?? false), fn ($query) => $query->where('status', 'ACTIVE'))
+            ->orderByDesc('start_date')
+            ->orderByDesc('id')
+            ->paginate(15)
+            ->withQueryString();
+
+        return PatientTreatmentResource::collection($treatments);
+    }
+
     /**
      * List the authenticated patient's appointments, newest first.
      */

@@ -113,6 +113,14 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the health professional profile associated through person_id.
+     */
+    public function healthStaff(): HasOne
+    {
+        return $this->hasOne(HealthStaff::class, 'person_id', 'person_id');
+    }
+
+    /**
      * Get the relative profile associated with the user.
      */
     public function relative(): HasOne
