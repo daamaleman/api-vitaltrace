@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ListPatientAppointmentsRequest;
 use App\Http\Requests\ListPatientMeasurementsRequest;
 use App\Http\Requests\StoreCorrectionRequestRequest;
 use App\Http\Requests\StoreMeasurementRequest;
@@ -25,6 +26,42 @@ use Illuminate\Http\Response;
 
 class PatientPortalController extends Controller
 {
+    /**
+     * List the authenticated patient's appointments, newest first.
+     */
+    public function appointments(ListPatientAppointmentsRequest $request): AnonymousResourceCollection|JsonResponse
+    {
+        $patient = $request->user()->patient;
+
+        if ($patient === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No patient profile is associated with this account.',
+                'errors' => null,
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $filters = $request->validated();
+
+        $appointments = Appointment::query()
+            ->with(['healthStaff.person', 'healthStaff.specialty'])
+            ->where('patient_id', $patient->id)
+            ->when(isset($filters['status']), fn ($query) => $query->where('status', $filters['status']))
+            ->when(isset($filters['date_from']), fn ($query) => $query->whereDate('scheduled_at', '>=', $filters['date_from']))
+            ->when(isset($filters['date_to']), fn ($query) => $query->whereDate('scheduled_at', '<=', $filters['date_to']))
+            ->when(
+                (bool) ($filters['upcoming'] ?? false),
+                fn ($query) => $query
+                    ->where('scheduled_at', '>=', now())
+                    ->whereIn('status', ['SCHEDULED', 'CONFIRMED'])
+            )
+            ->orderByDesc('scheduled_at')
+            ->paginate(15)
+            ->withQueryString();
+
+        return AppointmentSummaryResource::collection($appointments);
+    }
+
     /**
      * Return a bounded home-screen summary for the authenticated patient.
      */
