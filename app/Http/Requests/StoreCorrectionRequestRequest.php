@@ -11,7 +11,7 @@ class StoreCorrectionRequestRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreCorrectionRequestRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'field' => ['required', 'string', 'max:100'],
+            'current_value' => ['required', 'string', 'max:255'],
+            'requested_value' => ['required', 'string', 'max:255'],
+            'reason' => ['required', 'string', 'max:1000'],
         ];
     }
 }

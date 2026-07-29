@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -104,6 +105,22 @@ class User extends Authenticatable
     }
 
     /**
+     * Get the patient profile associated with the user.
+     */
+    public function patient(): HasOne
+    {
+        return $this->hasOne(Patient::class, 'person_id', 'person_id');
+    }
+
+    /**
+     * Get the relative profile associated with the user.
+     */
+    public function relative(): HasOne
+    {
+        return $this->hasOne(Relative::class, 'person_id', 'person_id');
+    }
+
+    /**
      * Determine whether a doctor or nurse has an active assignment for a patient (RN-06).
      *
      * System admins and admission are handled by role gates, not by this relation.
@@ -114,6 +131,20 @@ class User extends Authenticatable
             ->where('patient_id', $patientId)
             ->where('status', 'ACTIVE')
             ->whereHas('healthStaff', function ($query): void {
+                $query->where('person_id', $this->person_id);
+            })
+            ->exists();
+    }
+
+    /**
+     * Determine whether the user has an active relative access relationship for a patient.
+     */
+    public function hasActiveAccessToPatient(int $patientId): bool
+    {
+        return \App\Models\PatientRelative::query()
+            ->where('patient_id', $patientId)
+            ->whereIn('status', \App\Models\PatientRelative::ACTIVE_STATUSES)
+            ->whereHas('relative', function ($query): void {
                 $query->where('person_id', $this->person_id);
             })
             ->exists();
