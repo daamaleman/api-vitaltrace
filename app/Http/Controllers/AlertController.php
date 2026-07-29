@@ -22,7 +22,7 @@ class AlertController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
-        $alerts = Alert::with(['patient', 'measurement'])->latest('id')->paginate(15);
+        $alerts = Alert::with(['patient.person', 'measurement'])->latest('id')->paginate(15);
 
         return AlertResource::collection($alerts);
     }
@@ -35,7 +35,7 @@ class AlertController extends Controller
         $alert = Alert::create($request->validated());
 
         return response()->json([
-            'data' => new AlertResource($alert->load(['patient', 'measurement'])),
+            'data' => new AlertResource($alert->load(['patient.person', 'measurement'])),
             'message' => 'Alert created successfully.',
             'errors' => null,
         ], Response::HTTP_CREATED);
@@ -47,7 +47,7 @@ class AlertController extends Controller
     public function show(Alert $alert): JsonResponse
     {
         return response()->json([
-            'data' => new AlertResource($alert->load(['patient', 'measurement'])),
+            'data' => new AlertResource($alert->load(['patient.person', 'measurement'])),
             'message' => null,
             'errors' => null,
         ], Response::HTTP_OK);
@@ -61,7 +61,7 @@ class AlertController extends Controller
         $alert->update($request->validated());
 
         return response()->json([
-            'data' => new AlertResource($alert->load(['patient', 'measurement'])),
+            'data' => new AlertResource($alert->load(['patient.person', 'measurement'])),
             'message' => 'Alert updated successfully.',
             'errors' => null,
         ], Response::HTTP_OK);

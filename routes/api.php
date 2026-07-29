@@ -33,6 +33,8 @@ use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
 use App\Http\Controllers\AuditLogController;
 use Illuminate\Http\Request;
+use App\Http\Controllers\AlertActionController;
+use App\Http\Controllers\ClinicalPatientController;
 
 /*
 |--------------------------------------------------------------------------
@@ -82,7 +84,14 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('clinical-ranges', ClinicalRangeController::class);
         Route::apiResource('appointments', AppointmentController::class);
         Route::apiResource('alerts', AlertController::class);
+        Route::post('alerts/{alert}/classify', [AlertActionController::class, 'classify']);
+        Route::post('alerts/{alert}/escalate', [AlertActionController::class, 'escalate']);
+        Route::post('alerts/{alert}/close', [AlertActionController::class, 'close']);
         Route::apiResource('alert-history', AlertHistoryController::class)->only(['index', 'store', 'show']);
+        Route::get('clinical/patients', [ClinicalPatientController::class, 'index']);
+        Route::get('clinical/patients/{patient}', [ClinicalPatientController::class, 'show']);
+        Route::get('clinical/patients/{patient}/summary', [ClinicalPatientController::class, 'summary']);
+        Route::get('clinical/appointments', [ClinicalPatientController::class, 'appointments']);
     });
 
     // System administration and catalogs.

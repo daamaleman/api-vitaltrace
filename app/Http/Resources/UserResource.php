@@ -27,6 +27,12 @@ class UserResource extends JsonResource
             'failed_attempts' => $this->failed_attempts,
             'blocked_until' => $this->blocked_until?->format('Y-m-d H:i:s'),
             'person' => new PersonResource($this->whenLoaded('person')),
+            'roles' => $this->whenLoaded('roles', function () {
+                return $this->roles->map(fn ($role) => [
+                    'id' => $role->id,
+                    'name' => $role->name,
+                ]);
+            }),
             'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
             'created_by' => $this->created_by,
             'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
