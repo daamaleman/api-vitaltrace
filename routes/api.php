@@ -29,14 +29,13 @@ use App\Http\Controllers\ClinicalRangeController;
 use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AlertActionController;
-use App\Http\Controllers\AlertHistoryController;
 use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Portal\PatientPortalController;
 use App\Http\Controllers\Portal\PatientRelativeAccessController;
 use Illuminate\Http\Request;
-use App\Http\Controllers\AlertActionController;
+use App\Http\Controllers\AdmissionPatientController;
 use App\Http\Controllers\ClinicalPatientController;
 
 /*
@@ -103,6 +102,10 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('patient-relatives', PatientRelativeController::class);
         Route::apiResource('professional-assignments', ProfessionalAssignmentController::class);
         Route::apiResource('correction-requests', CorrectionRequestController::class);
+        Route::get('admission/patients', [AdmissionPatientController::class, 'index']);
+        Route::get('admission/patients/{patient}', [AdmissionPatientController::class, 'show']);
+        Route::post('admission/patients', [AdmissionPatientController::class, 'store']);
+        Route::put('admission/patients/{patient}', [AdmissionPatientController::class, 'update']);
     });
 
     // Clinical work for doctors and nurses.
