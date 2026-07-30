@@ -39,6 +39,7 @@ use App\Http\Controllers\AdmissionPatientController;
 use App\Http\Controllers\ClinicalPatientController;
 use App\Http\Controllers\AdmissionRelativeController;
 use App\Http\Controllers\AdmissionAssignmentController;
+use App\Http\Controllers\AdmissionAccountController;
 
 /*
 |--------------------------------------------------------------------------
@@ -115,6 +116,12 @@ Route::prefix('v1')->group(function () {
         Route::get('admission/patients/{patient}/assignments', [AdmissionAssignmentController::class, 'index']);
         Route::post('admission/patients/{patient}/assignments', [AdmissionAssignmentController::class, 'store']);
         Route::post('admission/assignments/{professionalAssignment}/finish', [AdmissionAssignmentController::class, 'finish']);
+        Route::get('admission/accounts', [AdmissionAccountController::class, 'index']);
+        Route::get('admission/accounts/available-people', [AdmissionAccountController::class, 'peopleWithoutAccount']);
+        Route::post('admission/accounts', [AdmissionAccountController::class, 'store']);
+        Route::post('admission/accounts/{user}/resend', [AdmissionAccountController::class, 'resend']);
+        Route::post('admission/accounts/{user}/block', [AdmissionAccountController::class, 'block']);
+        Route::post('admission/accounts/{user}/unblock', [AdmissionAccountController::class, 'unblock']);
     });
 
     // Clinical work for doctors and nurses.
