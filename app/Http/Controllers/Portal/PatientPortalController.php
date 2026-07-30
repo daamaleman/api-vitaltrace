@@ -122,7 +122,7 @@ class PatientPortalController extends Controller
             ->first();
 
         $latestMeasurements = Measurement::query()
-            ->with('measurementType')
+            ->with(['measurementType', 'reviewer.person'])
             ->where('patient_id', $patient->id)
             ->orderByDesc('measured_at')
             ->limit(3)

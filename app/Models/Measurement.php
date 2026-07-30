@@ -25,6 +25,11 @@ class Measurement extends Model
      */
     protected $table = 'measurements';
 
+    /** @var array<string, mixed> */
+    protected $attributes = [
+        'review_status' => 'PENDING',
+    ];
+
     /**
      * Mass-assignable attributes.
      *
@@ -39,6 +44,10 @@ class Measurement extends Model
         'origin',
         'author_user_id',
         'observation',
+        'review_status',
+        'reviewed_at',
+        'reviewed_by',
+        'review_observation',
         'created_by',
         'updated_by',
         'deleted_by',
@@ -52,6 +61,7 @@ class Measurement extends Model
     protected $casts = [
         'value' => 'decimal:3',
         'measured_at' => 'datetime',
+        'reviewed_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -79,6 +89,14 @@ class Measurement extends Model
     public function author(): BelongsTo
     {
         return $this->belongsTo(User::class, 'author_user_id');
+    }
+
+    /**
+     * User who reviewed the measurement.
+     */
+    public function reviewer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     /**
