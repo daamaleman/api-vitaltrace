@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\PatientRelativeResource;
+use App\Http\Resources\PatientPortalRelativeResource;
 use App\Models\PatientRelative;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -29,12 +29,12 @@ class PatientRelativeAccessController extends Controller
             ], Response::HTTP_NOT_FOUND);
         }
 
-        $relations = PatientRelative::with(['patient', 'relative'])
+        $relations = PatientRelative::with('relative.person')
             ->where('patient_id', $patient->id)
             ->latest('id')
             ->paginate(15);
 
-        return PatientRelativeResource::collection($relations);
+        return PatientPortalRelativeResource::collection($relations);
     }
 
     /**
@@ -55,7 +55,7 @@ class PatientRelativeAccessController extends Controller
         ]);
 
         return response()->json([
-            'data' => new PatientRelativeResource($patientRelative->load(['patient', 'relative'])),
+            'data' => new PatientPortalRelativeResource($patientRelative->load('relative.person')),
             'message' => 'Relative access authorized successfully.',
             'errors' => null,
         ], Response::HTTP_OK);
@@ -79,7 +79,7 @@ class PatientRelativeAccessController extends Controller
         ]);
 
         return response()->json([
-            'data' => new PatientRelativeResource($patientRelative->load(['patient', 'relative'])),
+            'data' => new PatientPortalRelativeResource($patientRelative->load('relative.person')),
             'message' => 'Relative access revoked successfully.',
             'errors' => null,
         ], Response::HTTP_OK);
