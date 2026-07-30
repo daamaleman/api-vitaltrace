@@ -43,11 +43,12 @@ class AccountActivationCode extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage())
-            ->subject('Your VitalTrace activation code')
-            ->greeting('Welcome to VitalTrace')
-            ->line('Use the following code to activate your account:')
+            ->subject('Tu código de activación de VitalTrace')
+            ->greeting('Bienvenido a VitalTrace')
+            ->line('Usa el siguiente código para activar tu cuenta:')
             ->line($this->code)
-            ->line("This code expires in {$this->validityHours} hours and can be used only once.")
-            ->line('If you did not request this, please ignore this email.');
+            ->line("Este código expira en {$this->validityHours} horas y solo puede usarse una vez.")
+            ->line('Si no solicitaste esto, ignora este correo.')
+            ->salutation('Saludos, el equipo de VitalTrace');
     }
 }
