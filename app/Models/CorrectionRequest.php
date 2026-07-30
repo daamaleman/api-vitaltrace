@@ -38,6 +38,7 @@ class CorrectionRequest extends Model
         'status',
         'reviewed_by',
         'response',
+        'reviewed_at',
         'created_by',
         'updated_by',
     ];

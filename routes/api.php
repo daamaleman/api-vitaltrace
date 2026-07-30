@@ -40,6 +40,7 @@ use App\Http\Controllers\ClinicalPatientController;
 use App\Http\Controllers\AdmissionRelativeController;
 use App\Http\Controllers\AdmissionAssignmentController;
 use App\Http\Controllers\AdmissionAccountController;
+use App\Http\Controllers\AdmissionCorrectionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -122,6 +123,9 @@ Route::prefix('v1')->group(function () {
         Route::post('admission/accounts/{user}/resend', [AdmissionAccountController::class, 'resend']);
         Route::post('admission/accounts/{user}/block', [AdmissionAccountController::class, 'block']);
         Route::post('admission/accounts/{user}/unblock', [AdmissionAccountController::class, 'unblock']);
+        Route::get('admission/corrections', [AdmissionCorrectionController::class, 'index']);
+        Route::post('admission/corrections/{correctionRequest}/approve', [AdmissionCorrectionController::class, 'approve']);
+        Route::post('admission/corrections/{correctionRequest}/reject', [AdmissionCorrectionController::class, 'reject']);
     });
 
     // Clinical work for doctors and nurses.
