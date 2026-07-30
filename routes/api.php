@@ -41,6 +41,7 @@ use App\Http\Controllers\AdmissionRelativeController;
 use App\Http\Controllers\AdmissionAssignmentController;
 use App\Http\Controllers\AdmissionAccountController;
 use App\Http\Controllers\AdmissionCorrectionController;
+use App\Http\Controllers\AdminUserController;
 
 /*
 |--------------------------------------------------------------------------
@@ -166,5 +167,8 @@ Route::prefix('v1')->group(function () {
         ]);
         Route::apiResource('integration-logs', IntegrationLogController::class)->only(['index', 'store', 'show']);
         Route::apiResource('audit-logs', AuditLogController::class)->only(['index', 'store', 'show']);
+        Route::get('admin/users', [AdminUserController::class, 'index']);
+        Route::post('admin/users/{user}/block', [AdminUserController::class, 'block']);
+        Route::post('admin/users/{user}/unblock', [AdminUserController::class, 'unblock']);
     });
 });
