@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpFoundation\Response;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -17,6 +19,22 @@ class Handler extends ExceptionHandler
         'password',
         'password_confirmation',
     ];
+
+    /**
+     * Return an API response instead of redirecting unauthenticated API clients.
+     */
+    protected function unauthenticated($request, AuthenticationException $exception): Response
+    {
+        if ($request->is("api/*")) {
+            return response()->json([
+                "data" => null,
+                "message" => "Unauthenticated.",
+                "errors" => null,
+            ], Response::HTTP_UNAUTHORIZED);
+        }
+
+        return parent::unauthenticated($request, $exception);
+    }
 
     /**
      * Register the exception handling callbacks for the application.
