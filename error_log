@@ -1,0 +1,5 @@
+[29-Jul-2026 23:04:52 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\AlertActionController as AlertActionController because the name is already in use in /home/vitakbbv/api.vitaltrace.lat/routes/api.php on line 39
+[29-Jul-2026 23:05:18 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\AlertActionController as AlertActionController because the name is already in use in /home/vitakbbv/api.vitaltrace.lat/routes/api.php on line 39
+[29-Jul-2026 23:05:22 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\AlertActionController as AlertActionController because the name is already in use in /home/vitakbbv/api.vitaltrace.lat/routes/api.php on line 39
+[29-Jul-2026 23:05:50 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\AlertActionController as AlertActionController because the name is already in use in /home/vitakbbv/api.vitaltrace.lat/routes/api.php on line 39
+[29-Jul-2026 23:07:54 UTC] PHP Fatal error:  Cannot use App\Http\Controllers\AlertActionController as AlertActionController because the name is already in use in /home/vitakbbv/api.vitaltrace.lat/routes/api.php on line 38

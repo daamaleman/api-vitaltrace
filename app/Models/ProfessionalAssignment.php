@@ -10,6 +10,25 @@ class ProfessionalAssignment extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
+    protected $fillable = [
+        'patient_id',
+        'health_staff_id',
+        'assignment_type',
+        'start_date',
+        'end_date',
+        'status',
+        'change_reason',
+        'assigned_by',
+        'created_by',
+        'updated_by',
+        'deleted_by',
+    ];
+
     public function patient(): BelongsTo
     {
         return $this->belongsTo(Patient::class);

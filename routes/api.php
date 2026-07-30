@@ -38,6 +38,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\AdmissionPatientController;
 use App\Http\Controllers\ClinicalPatientController;
 use App\Http\Controllers\AdmissionRelativeController;
+use App\Http\Controllers\AdmissionAssignmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -110,6 +111,10 @@ Route::prefix('v1')->group(function () {
         Route::get('admission/patients/{patient}/relatives', [AdmissionRelativeController::class, 'index']);
         Route::post('admission/patients/{patient}/relatives', [AdmissionRelativeController::class, 'store']);
         Route::post('admission/relative-links/{patientRelative}/revoke', [AdmissionRelativeController::class, 'revoke']);
+        Route::get('admission/staff', [AdmissionAssignmentController::class, 'availableStaff']);
+        Route::get('admission/patients/{patient}/assignments', [AdmissionAssignmentController::class, 'index']);
+        Route::post('admission/patients/{patient}/assignments', [AdmissionAssignmentController::class, 'store']);
+        Route::post('admission/assignments/{professionalAssignment}/finish', [AdmissionAssignmentController::class, 'finish']);
     });
 
     // Clinical work for doctors and nurses.
