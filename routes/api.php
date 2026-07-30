@@ -74,6 +74,7 @@ Route::prefix('v1')->group(function () {
         Route::middleware('role:PATIENT')->prefix('patient')->group(function () {
             // Reads.
             Route::get('summary', [PatientPortalController::class, 'summary']);
+            Route::get('profile', [PatientPortalController::class, 'profile']);
             Route::get('appointments', [PatientPortalController::class, 'appointments']);
             Route::get('measurements', [PatientPortalController::class, 'measurements']);
             Route::get('treatments', [PatientPortalController::class, 'treatments']);

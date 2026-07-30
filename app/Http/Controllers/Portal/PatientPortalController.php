@@ -14,6 +14,7 @@ use App\Http\Resources\CorrectionRequestResource;
 use App\Http\Resources\AppointmentSummaryResource;
 use App\Http\Resources\MeasurementResource;
 use App\Http\Resources\PatientSummaryResource;
+use App\Http\Resources\PatientProfileResource;
 use App\Http\Resources\PatientTreatmentResource;
 use App\Http\Resources\TreatmentResource;
 use App\Models\Alert;
@@ -28,6 +29,29 @@ use Illuminate\Http\Response;
 
 class PatientPortalController extends Controller
 {
+    /**
+     * Return the authenticated patient's own account and demographic profile.
+     */
+    public function profile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $patient = $user->patient;
+
+        if ($patient === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No patient profile is associated with this account.',
+                'errors' => null,
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'data' => new PatientProfileResource($user->load(['person', 'patient'])),
+            'message' => 'Patient profile retrieved successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
+    }
+
     /**
      * List the authenticated patient's treatments, newest first.
      */
