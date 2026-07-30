@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\PasswordResetToken;
 
 class User extends Authenticatable
 {
@@ -19,6 +20,17 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+
+    /**
+     * Send the API password-reset token using the configured mailer.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new PasswordResetToken(
+            (string) $token,
+            (int) config('auth.passwords.users.expire', 60),
+        ));
+    }
 
     /**
      * The database table associated with the model.

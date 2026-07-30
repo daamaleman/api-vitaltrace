@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\ActivationController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PersonController;
 use App\Http\Controllers\UserController;
@@ -60,6 +61,8 @@ Route::prefix('v1')->group(function () {
         Route::post('auth/login', [AuthController::class, 'login']);
         Route::post('auth/activate-account', [ActivationController::class, 'activate']);
         Route::post('auth/resend-code', [ActivationController::class, 'resend']);
+        Route::post('auth/forgot-password', [PasswordResetController::class, 'forgot']);
+        Route::post('auth/reset-password', [PasswordResetController::class, 'reset']);
     });
 
     // Authenticated session.
