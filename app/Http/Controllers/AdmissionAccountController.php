@@ -6,14 +6,13 @@ namespace App\Http\Controllers;
 
 use App\Models\AccountActivation;
 use App\Models\Person;
+use App\Models\Role;
 use App\Models\User;
 use App\Services\ActivationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 /**
  * Admission-side account management (§8.3, RN-10).
@@ -72,16 +71,24 @@ class AdmissionAccountController extends Controller
             'email' => ['required', 'email', 'max:180', 'unique:users,email'],
         ]);
 
-        $user = DB::transaction(function () use ($data) {
+        $user = DB::transaction(function () use ($data, $request) {
             $newUser = User::create([
                 'person_id' => $data['person_id'],
-                'email' => $data['email'],
-                // Temporary random password; replaced when the user activates.
-                'password' => Hash::make(Str::random(40)),
+                'email' => mb_strtolower(trim($data['email'])),
+                'password' => null,
+                'password_set_at' => null,
                 'status' => 'PENDING',
             ]);
 
-            // Issue the activation code (hashed + emailed by the service).
+            if ($newUser->patient()->exists()) {
+                $patientRole = Role::query()->where('name', 'PATIENT')->firstOrFail();
+                $newUser->roles()->attach($patientRole->id, [
+                    'active' => true,
+                    'assigned_at' => now(),
+                    'assigned_by' => $request->user()?->id,
+                ]);
+            }
+
             $this->activationService->issueFor($newUser);
 
             return $newUser;

@@ -62,6 +62,9 @@ Route::prefix('v1')->group(function () {
         Route::post('auth/login', [AuthController::class, 'login']);
         Route::post('auth/activate-account', [ActivationController::class, 'activate']);
         Route::post('auth/resend-code', [ActivationController::class, 'resend']);
+        Route::post('auth/activation/verify-code', [ActivationController::class, 'verifyCode']);
+        Route::post('auth/activation/set-password', [ActivationController::class, 'setPassword']);
+        Route::post('auth/activation/resend-code', [ActivationController::class, 'resend']);
         Route::post('auth/forgot-password', [PasswordResetController::class, 'forgot']);
         Route::post('auth/reset-password', [PasswordResetController::class, 'reset']);
     });

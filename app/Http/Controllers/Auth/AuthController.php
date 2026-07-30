@@ -39,6 +39,16 @@ class AuthController extends Controller
 
         $user = User::where('email', $credentials['email'])->first();
 
+        if ($user !== null
+            && $user->password_set_at === null
+            && $user->patient()->exists()) {
+            return response()->json([
+                'data' => null,
+                'message' => 'Initial account activation is required.',
+                'errors' => ['code' => 'ACCOUNT_ACTIVATION_REQUIRED'],
+            ], Response::HTTP_FORBIDDEN);
+        }
+
         if ($user === null
             || $user->password === null
             || ! Hash::check($credentials['password'], $user->password)) {
