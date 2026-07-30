@@ -34,6 +34,7 @@ use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Portal\PatientPortalController;
+use App\Http\Controllers\Portal\PatientNotificationController;
 use App\Http\Controllers\Portal\PatientRelativeAccessController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AdmissionPatientController;
@@ -79,6 +80,10 @@ Route::prefix('v1')->group(function () {
             Route::get('appointments', [PatientPortalController::class, 'appointments']);
             Route::get('measurements', [PatientPortalController::class, 'measurements']);
             Route::get('treatments', [PatientPortalController::class, 'treatments']);
+            Route::get('notifications', [PatientNotificationController::class, 'index']);
+            Route::get('notifications/unread-count', [PatientNotificationController::class, 'unreadCount']);
+            Route::patch('notifications/read-all', [PatientNotificationController::class, 'markAllAsRead']);
+            Route::patch('notifications/{notification}/read', [PatientNotificationController::class, 'markAsRead']);
 
             // Writes.
             Route::post('measurements', [PatientPortalController::class, 'storeMeasurement']);
@@ -155,7 +160,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // System administration and catalogs.
-    Route::middleware('role:SYSTEM_ADMIN')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:SYSTEM_ADMIN'])->group(function () {
         Route::apiResource('roles', RoleController::class);
         Route::apiResource('permissions', PermissionController::class);
         Route::apiResource('role-permissions', RolePermissionController::class);

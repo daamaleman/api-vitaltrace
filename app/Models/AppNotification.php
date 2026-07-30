@@ -38,6 +38,10 @@ class AppNotification extends Model
         'attempts',
         'scheduled_at',
         'sent_at',
+        'read_at',
+        'related_type',
+        'related_id',
+        'action_route',
         'error_summary',
         'created_by',
         'updated_by',
@@ -52,6 +56,8 @@ class AppNotification extends Model
         'attempts' => 'integer',
         'scheduled_at' => 'datetime',
         'sent_at' => 'datetime',
+        'read_at' => 'datetime',
+        'related_id' => 'integer',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
     ];
@@ -78,5 +84,25 @@ class AppNotification extends Model
     public function editor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    /**
+     * Determine whether the recipient has read the notification.
+     */
+    public function getIsReadAttribute(): bool
+    {
+        return $this->read_at !== null;
+    }
+
+    /**
+     * Mark the notification as read without changing an existing read timestamp.
+     */
+    public function markAsRead(): self
+    {
+        if ($this->read_at === null) {
+            $this->forceFill(['read_at' => now()])->save();
+        }
+
+        return $this;
     }
 }
