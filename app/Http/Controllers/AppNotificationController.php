@@ -39,7 +39,7 @@ class AppNotificationController extends Controller
 
         return response()->json([
             'data' => new AppNotificationResource($notification->load('user')),
-            'message' => 'Notification created successfully.',
+            'message' => 'Notificación creada correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -65,7 +65,7 @@ class AppNotificationController extends Controller
 
         return response()->json([
             'data' => new AppNotificationResource($notification->load('user')),
-            'message' => 'Notification updated successfully.',
+            'message' => 'Notificación actualizada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -79,7 +79,7 @@ class AppNotificationController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Notification removed successfully.',
+            'message' => 'Notificación eliminada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

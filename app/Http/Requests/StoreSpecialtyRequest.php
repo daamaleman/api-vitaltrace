@@ -38,7 +38,7 @@ class StoreSpecialtyRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique' => 'The specialty name is already registered.',
+            'name.unique' => 'El nombre de la especialidad ya está registrado.',
         ];
     }
 }

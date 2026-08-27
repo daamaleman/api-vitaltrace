@@ -36,7 +36,7 @@ class DiagnosisController extends Controller
 
         return response()->json([
             'data' => new DiagnosisResource($diagnosis->load('patient')),
-            'message' => 'Diagnosis registered successfully.',
+            'message' => 'Diagnóstico registrado correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -62,7 +62,7 @@ class DiagnosisController extends Controller
 
         return response()->json([
             'data' => new DiagnosisResource($diagnosis->load('patient')),
-            'message' => 'Diagnosis updated successfully.',
+            'message' => 'Diagnóstico actualizado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -76,7 +76,7 @@ class DiagnosisController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Diagnosis removed successfully.',
+            'message' => 'Diagnóstico eliminado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

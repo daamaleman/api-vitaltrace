@@ -36,7 +36,7 @@ class AppointmentController extends Controller
 
         return response()->json([
             'data' => new AppointmentResource($appointment->load(['patient', 'healthStaff'])),
-            'message' => 'Appointment scheduled successfully.',
+            'message' => 'Cita programada correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -62,7 +62,7 @@ class AppointmentController extends Controller
 
         return response()->json([
             'data' => new AppointmentResource($appointment->load(['patient', 'healthStaff'])),
-            'message' => 'Appointment updated successfully.',
+            'message' => 'Cita actualizada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -76,7 +76,7 @@ class AppointmentController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Appointment removed successfully.',
+            'message' => 'Cita eliminada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

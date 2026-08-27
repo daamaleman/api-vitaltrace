@@ -55,7 +55,7 @@ class PersonController extends Controller
         $person->delete();
         return response()->json([
             'success' => true,
-            'message' => 'Person deleted successfully.'
+            'message' => 'Persona eliminada correctamente.'
         ], 200);
     }
 }

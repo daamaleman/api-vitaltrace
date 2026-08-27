@@ -51,7 +51,7 @@ class StoreRelativeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'person_id.unique' => 'This person is already registered as a relative.',
+            'person_id.unique' => 'Esta persona ya está registrada como familiar.',
         ];
     }
 }

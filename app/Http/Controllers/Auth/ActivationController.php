@@ -37,14 +37,14 @@ class ActivationController extends Controller
         if ($user === null) {
             return response()->json([
                 'data' => null,
-                'message' => 'The activation code is invalid or has expired.',
+                'message' => 'El código de activación no es válido o ha expirado.',
                 'errors' => null,
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return response()->json([
             'data' => new UserResource($user->load('person')),
-            'message' => 'Account activated successfully.',
+            'message' => 'Cuenta activada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -70,7 +70,7 @@ class ActivationController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'If the account exists and is pending, a new code has been sent.',
+            'message' => 'Si la cuenta existe y está pendiente, se ha enviado un nuevo código.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -83,14 +83,14 @@ class ActivationController extends Controller
         if ($result === null) {
             return response()->json([
                 'data' => null,
-                'message' => 'The activation code is invalid or has expired.',
+                'message' => 'El código de activación no es válido o ha expirado.',
                 'errors' => ['code' => 'INVALID_ACTIVATION_CODE'],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return response()->json([
             'data' => $result,
-            'message' => 'Activation code verified.',
+            'message' => 'Código de activación verificado.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -106,14 +106,14 @@ class ActivationController extends Controller
         if (! $completed) {
             return response()->json([
                 'data' => null,
-                'message' => 'The activation token is invalid or has expired.',
+                'message' => 'El token de activación no es válido o ha expirado.',
                 'errors' => ['code' => 'INVALID_ACTIVATION_TOKEN'],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return response()->json([
             'data' => ['activation_completed' => true],
-            'message' => 'Password created successfully.',
+            'message' => 'Contraseña creada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

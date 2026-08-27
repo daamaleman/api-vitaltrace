@@ -74,7 +74,7 @@ class AuthController extends Controller
                 'data' => [
                     'user' => new UserResource($user->load('person', 'roles')),
                 ],
-                'message' => 'Logged in successfully.',
+                'message' => 'Sesión iniciada correctamente.',
                 'errors' => null,
             ], Response::HTTP_OK);
         }
@@ -89,7 +89,7 @@ class AuthController extends Controller
                 'token' => $token,
                 'token_type' => 'Bearer',
             ],
-            'message' => 'Logged in successfully.',
+            'message' => 'Sesión iniciada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -121,7 +121,7 @@ class AuthController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Logged out successfully.',
+            'message' => 'Sesión cerrada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

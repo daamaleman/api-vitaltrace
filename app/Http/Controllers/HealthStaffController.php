@@ -36,7 +36,7 @@ class HealthStaffController extends Controller
 
         return response()->json([
             'data' => new HealthStaffResource($healthStaff->load(['person', 'specialty'])),
-            'message' => 'Health staff registered successfully.',
+            'message' => 'Personal de salud registrado correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -62,7 +62,7 @@ class HealthStaffController extends Controller
 
         return response()->json([
             'data' => new HealthStaffResource($healthStaff->load(['person', 'specialty'])),
-            'message' => 'Health staff updated successfully.',
+            'message' => 'Personal de salud actualizado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -76,7 +76,7 @@ class HealthStaffController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Health staff removed successfully.',
+            'message' => 'Personal de salud eliminado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

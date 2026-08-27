@@ -38,7 +38,7 @@ class IntegrationLogController extends Controller
 
         return response()->json([
             'data' => new IntegrationLogResource($log),
-            'message' => 'Integration log entry recorded successfully.',
+            'message' => 'Entrada del registro de integración creada correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }

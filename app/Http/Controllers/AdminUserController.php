@@ -49,7 +49,7 @@ class AdminUserController extends Controller
 
         return response()->json([
             'data' => ['id' => $user->id, 'status' => $user->status],
-            'message' => 'User blocked.',
+            'message' => 'Usuario bloqueado.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -60,7 +60,7 @@ class AdminUserController extends Controller
 
         return response()->json([
             'data' => ['id' => $user->id, 'status' => $user->status],
-            'message' => 'User unblocked.',
+            'message' => 'Usuario desbloqueado.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

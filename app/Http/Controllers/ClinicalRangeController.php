@@ -36,7 +36,7 @@ class ClinicalRangeController extends Controller
 
         return response()->json([
             'data' => new ClinicalRangeResource($range->load(['patient', 'measurementType'])),
-            'message' => 'Clinical range created successfully.',
+            'message' => 'Rango clínico creado correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -62,7 +62,7 @@ class ClinicalRangeController extends Controller
 
         return response()->json([
             'data' => new ClinicalRangeResource($clinicalRange->load(['patient', 'measurementType'])),
-            'message' => 'Clinical range updated successfully.',
+            'message' => 'Rango clínico actualizado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -76,7 +76,7 @@ class ClinicalRangeController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Clinical range removed successfully.',
+            'message' => 'Rango clínico eliminado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

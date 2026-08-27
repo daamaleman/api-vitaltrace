@@ -42,7 +42,7 @@ class StoreMeasurementTypeRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'name.unique' => 'The measurement type name is already registered.',
+            'name.unique' => 'El nombre del tipo de medición ya está registrado.',
         ];
     }
 }

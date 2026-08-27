@@ -27,7 +27,7 @@ class RolePermissionController extends Controller
 
         return response()->json([
             'data' => new RolePermissionResource($rolePermission->load(['role', 'permission'])),
-            'message' => 'Permission assigned to role successfully.',
+            'message' => 'Permiso asignado al rol correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -47,7 +47,7 @@ class RolePermissionController extends Controller
 
         return response()->json([
             'data' => new RolePermissionResource($rolePermission->load(['role', 'permission'])),
-            'message' => 'Role permission updated successfully.',
+            'message' => 'Permiso de rol actualizado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -58,7 +58,7 @@ class RolePermissionController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Role permission removed successfully.',
+            'message' => 'Permiso de rol eliminado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

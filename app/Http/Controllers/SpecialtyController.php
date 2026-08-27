@@ -33,7 +33,7 @@ class SpecialtyController extends Controller
 
         return response()->json([
             'data' => new SpecialtyResource($specialty),
-            'message' => 'Specialty created successfully.',
+            'message' => 'Especialidad creada correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -59,7 +59,7 @@ class SpecialtyController extends Controller
 
         return response()->json([
             'data' => new SpecialtyResource($specialty),
-            'message' => 'Specialty updated successfully.',
+            'message' => 'Especialidad actualizada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -73,7 +73,7 @@ class SpecialtyController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Specialty deleted successfully.',
+            'message' => 'Especialidad eliminada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

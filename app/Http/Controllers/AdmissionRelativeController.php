@@ -94,7 +94,7 @@ class AdmissionRelativeController extends Controller
 
         return response()->json([
             'data' => $link->load('relative.person'),
-            'message' => 'Relative registered successfully.',
+            'message' => 'Familiar registrado correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -111,7 +111,7 @@ class AdmissionRelativeController extends Controller
 
         return response()->json([
             'data' => $patientRelative->fresh()->load('relative.person'),
-            'message' => 'Relative access revoked.',
+            'message' => 'Acceso del familiar revocado.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

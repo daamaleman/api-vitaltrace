@@ -38,7 +38,7 @@ class AlertHistoryController extends Controller
 
         return response()->json([
             'data' => new AlertHistoryResource($entry->load('alert')),
-            'message' => 'Alert history entry recorded successfully.',
+            'message' => 'Entrada del historial de alerta registrada correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }

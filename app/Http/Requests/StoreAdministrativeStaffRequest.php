@@ -43,8 +43,8 @@ class StoreAdministrativeStaffRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'person_id.unique' => 'This person is already registered as administrative staff.',
-            'employee_code.unique' => 'The employee code is already in use.',
+            'person_id.unique' => 'Esta persona ya está registrada como personal administrativo.',
+            'employee_code.unique' => 'El código de empleado ya está en uso.',
         ];
     }
 }

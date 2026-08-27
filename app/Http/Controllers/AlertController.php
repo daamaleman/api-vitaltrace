@@ -36,7 +36,7 @@ class AlertController extends Controller
 
         return response()->json([
             'data' => new AlertResource($alert->load(['patient.person', 'measurement'])),
-            'message' => 'Alert created successfully.',
+            'message' => 'Alerta creada correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -62,7 +62,7 @@ class AlertController extends Controller
 
         return response()->json([
             'data' => new AlertResource($alert->load(['patient.person', 'measurement'])),
-            'message' => 'Alert updated successfully.',
+            'message' => 'Alerta actualizada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -76,7 +76,7 @@ class AlertController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Alert removed successfully.',
+            'message' => 'Alerta eliminada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

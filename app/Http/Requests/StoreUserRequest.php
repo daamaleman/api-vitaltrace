@@ -50,8 +50,8 @@ class StoreUserRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'person_id.unique' => 'This person already has a user account.',
-            'email.unique' => 'The email address is already registered.',
+            'person_id.unique' => 'Esta persona ya tiene una cuenta de usuario.',
+            'email.unique' => 'El correo electrónico ya está registrado.',
         ];
     }
 }

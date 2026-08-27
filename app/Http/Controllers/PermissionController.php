@@ -38,7 +38,7 @@ class PermissionController extends Controller
 
         return response()->json([
             'data' => new PermissionResource($permission),
-            'message' => 'Permission created successfully.',
+            'message' => 'Permiso creado correctamente.',
             'errors' => null,
         ], Response::HTTP_CREATED);
     }
@@ -71,7 +71,7 @@ class PermissionController extends Controller
 
         return response()->json([
             'data' => new PermissionResource($permission),
-            'message' => 'Permission updated successfully.',
+            'message' => 'Permiso actualizado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -88,7 +88,7 @@ class PermissionController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Permission deleted successfully.',
+            'message' => 'Permiso eliminado correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
