@@ -111,11 +111,12 @@ Route::prefix('v1')->group(function () {
     });
 
     // Define API resource routes for various controllers
-    // People catalog: shared read for staff, managed by admission/admin.
-    Route::apiResource('people', PersonController::class);
-
     // Admission-only administrative management.
     Route::middleware('role:ADMISSION')->group(function () {
+        // People catalog: managed by admission only (RN-01, RN-06). Other roles
+        // reach person data through their own scoped endpoints (e.g. assigned
+        // patients), never through this generic CRUD.
+        Route::apiResource('people', PersonController::class);
         Route::apiResource('patients', PatientController::class);
         Route::apiResource('relatives', RelativeController::class);
         Route::apiResource('patient-relatives', PatientRelativeController::class);
