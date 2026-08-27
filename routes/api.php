@@ -20,16 +20,11 @@ use App\Http\Controllers\ProfessionalAssignmentController;
 use App\Http\Controllers\AccountActivationController;
 use App\Http\Controllers\CorrectionRequestController;
 use App\Http\Controllers\DiagnosisController;
-use App\Http\Controllers\ClinicalEvolutionController;
-use App\Http\Controllers\TreatmentController;
 use App\Http\Controllers\MedicationController;
-use App\Http\Controllers\TreatmentMedicationController;
 use App\Http\Controllers\MeasurementTypeController;
-use App\Http\Controllers\MeasurementController;
-use App\Http\Controllers\ClinicalRangeController;
-use App\Http\Controllers\AppointmentController;
 use App\Http\Controllers\AlertController;
 use App\Http\Controllers\AlertActionController;
+use App\Http\Controllers\AlertHistoryController;
 use App\Http\Controllers\AppNotificationController;
 use App\Http\Controllers\IntegrationLogController;
 use App\Http\Controllers\AuditLogController;
@@ -112,7 +107,7 @@ Route::prefix('v1')->group(function () {
 
     // Define API resource routes for various controllers
     // Admission-only administrative management.
-    Route::middleware('role:ADMISSION')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:ADMISSION'])->group(function () {
         // People catalog: managed by admission only (RN-01, RN-06). Other roles
         // reach person data through their own scoped endpoints (e.g. assigned
         // patients), never through this generic CRUD.
@@ -145,14 +140,10 @@ Route::prefix('v1')->group(function () {
     });
 
     // Clinical work for doctors and nurses.
-    Route::middleware('role:DOCTOR,NURSE')->group(function () {
+    Route::middleware(['auth:sanctum', 'role:DOCTOR,NURSE'])->group(function () {
+        // Filtered by assigned patients (RN-06) — see AlertController::index()
+        // and DiagnosisController::index().
         Route::apiResource('diagnoses', DiagnosisController::class);
-        Route::apiResource('clinical-evolutions', ClinicalEvolutionController::class);
-        Route::apiResource('treatments', TreatmentController::class);
-        Route::apiResource('treatment-medications', TreatmentMedicationController::class);
-        Route::apiResource('measurements', MeasurementController::class);
-        Route::apiResource('clinical-ranges', ClinicalRangeController::class);
-        Route::apiResource('appointments', AppointmentController::class);
         Route::apiResource('alerts', AlertController::class);
         Route::post('alerts/{alert}/classify', [AlertActionController::class, 'classify']);
         Route::post('alerts/{alert}/escalate', [AlertActionController::class, 'escalate']);

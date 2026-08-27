@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesAssignedPatients;
 use App\Http\Requests\StoreAlertRequest;
 use App\Http\Requests\UpdateAlertRequest;
 use App\Http\Resources\AlertResource;
 use App\Models\Alert;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
@@ -17,12 +19,18 @@ use Illuminate\Http\Response;
  */
 class AlertController extends Controller
 {
+    use ResolvesAssignedPatients;
+
     /**
-     * List paginated alerts with patient and originating measurement.
+     * List paginated alerts for the authenticated professional's assigned
+     * patients only (RN-06).
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $alerts = Alert::with(['patient.person', 'measurement'])->latest('id')->paginate(15);
+        $alerts = Alert::with(['patient.person', 'measurement'])
+            ->whereIn('patient_id', $this->assignedPatientIds($request))
+            ->latest('id')
+            ->paginate(15);
 
         return AlertResource::collection($alerts);
     }

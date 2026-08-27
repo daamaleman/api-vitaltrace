@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\ResolvesAssignedPatients;
 use App\Http\Requests\StoreDiagnosisRequest;
 use App\Http\Requests\UpdateDiagnosisRequest;
 use App\Http\Resources\DiagnosisResource;
 use App\Models\Diagnosis;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
@@ -17,12 +19,18 @@ use Illuminate\Http\Response;
  */
 class DiagnosisController extends Controller
 {
+    use ResolvesAssignedPatients;
+
     /**
-     * List paginated diagnoses with their patient.
+     * List paginated diagnoses for the authenticated professional's
+     * assigned patients only (RN-06).
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $diagnoses = Diagnosis::with('patient')->latest('id')->paginate(15);
+        $diagnoses = Diagnosis::with('patient')
+            ->whereIn('patient_id', $this->assignedPatientIds($request))
+            ->latest('id')
+            ->paginate(15);
 
         return DiagnosisResource::collection($diagnoses);
     }
