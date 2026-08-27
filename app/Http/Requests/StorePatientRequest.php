@@ -46,8 +46,8 @@ class StorePatientRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'person_id.unique' => 'This person is already registered as a patient.',
-            'record_number.unique' => 'The record number is already in use.',
+            'person_id.unique' => 'Esta persona ya está registrada como paciente.',
+            'record_number.unique' => 'El número de expediente ya está en uso.',
         ];
     }
 }
