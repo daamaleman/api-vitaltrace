@@ -22,6 +22,8 @@ class AccountActivation extends Model
      */
     public const MAX_ATTEMPTS = 5;
 
+    public const TOKEN_VALIDITY_MINUTES = 15;
+
     /**
      * The table associated with the model.
      *
@@ -37,6 +39,9 @@ class AccountActivation extends Model
     protected $fillable = [
         'user_id',
         'code_hash',
+        'activation_token_hash',
+        'activation_token_expires_at',
+        'activation_token_used_at',
         'sent_to_email',
         'expires_at',
         'used_at',
@@ -53,6 +58,8 @@ class AccountActivation extends Model
      */
     protected $casts = [
         'expires_at' => 'datetime',
+        'activation_token_expires_at' => 'datetime',
+        'activation_token_used_at' => 'datetime',
         'used_at' => 'datetime',
         'attempts' => 'integer',
         'created_at' => 'datetime',

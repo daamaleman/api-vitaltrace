@@ -14,6 +14,8 @@ use App\Http\Resources\CorrectionRequestResource;
 use App\Http\Resources\AppointmentSummaryResource;
 use App\Http\Resources\MeasurementResource;
 use App\Http\Resources\PatientSummaryResource;
+use App\Http\Resources\PatientProfileResource;
+use App\Http\Resources\PatientClinicalHistoryResource;
 use App\Http\Resources\PatientTreatmentResource;
 use App\Http\Resources\TreatmentResource;
 use App\Models\Alert;
@@ -21,6 +23,8 @@ use App\Models\Appointment;
 use App\Models\CorrectionRequest;
 use App\Models\Measurement;
 use App\Models\Treatment;
+use App\Models\Diagnosis;
+use App\Models\ClinicalEvolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -28,6 +32,85 @@ use Illuminate\Http\Response;
 
 class PatientPortalController extends Controller
 {
+    /**
+     * Return the authenticated patient's existing read-only clinical history.
+     */
+    public function clinicalHistory(Request $request): JsonResponse
+    {
+        $patient = $request->user()->patient;
+
+        if ($patient === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No patient profile is associated with this account.',
+                'errors' => null,
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        $professionalRelations = ['registeredBy.person', 'registeredBy.healthStaff.specialty'];
+
+        $diagnoses = Diagnosis::query()
+            ->with($professionalRelations)
+            ->where('patient_id', $patient->id)
+            ->orderByDesc('diagnosis_date')
+            ->get();
+
+        $evolutions = ClinicalEvolution::query()
+            ->with($professionalRelations)
+            ->where('patient_id', $patient->id)
+            ->orderByDesc('recorded_at')
+            ->get();
+
+        $treatments = Treatment::query()
+            ->with(['prescribedBy.person', 'prescribedBy.healthStaff.specialty'])
+            ->where('patient_id', $patient->id)
+            ->where('status', 'ACTIVE')
+            ->orderByDesc('start_date')
+            ->get();
+
+        $measurements = Measurement::query()
+            ->with('measurementType')
+            ->where('patient_id', $patient->id)
+            ->orderByDesc('measured_at')
+            ->limit(30)
+            ->get();
+
+        return response()->json([
+            'data' => new PatientClinicalHistoryResource([
+                'patient' => $patient,
+                'diagnoses' => $diagnoses,
+                'evolutions' => $evolutions,
+                'treatments' => $treatments,
+                'measurements' => $measurements,
+            ]),
+            'message' => 'Patient clinical history retrieved successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * Return the authenticated patient's own account and demographic profile.
+     */
+    public function profile(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $patient = $user->patient;
+
+        if ($patient === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No patient profile is associated with this account.',
+                'errors' => null,
+            ], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json([
+            'data' => new PatientProfileResource($user->load(['person', 'patient'])),
+            'message' => 'Patient profile retrieved successfully.',
+            'errors' => null,
+        ], Response::HTTP_OK);
+    }
+
     /**
      * List the authenticated patient's treatments, newest first.
      */

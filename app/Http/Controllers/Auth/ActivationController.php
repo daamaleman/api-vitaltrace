@@ -7,6 +7,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ActivateAccountRequest;
 use App\Http\Requests\ResendCodeRequest;
+use App\Http\Requests\SetInitialPasswordRequest;
+use App\Http\Requests\VerifyActivationCodeRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\ActivationService;
@@ -30,7 +32,7 @@ class ActivationController extends Controller
     {
         $data = $request->validated();
 
-        $user = $this->activationService->activate($data['email'], $data['code'], $data['password']);
+        $user = $this->activationService->activateLegacy($data['email'], $data['code'], $data['password']);
 
         if ($user === null) {
             return response()->json([
@@ -59,13 +61,59 @@ class ActivationController extends Controller
 
         $user = User::where('email', $email)->first();
 
-        if ($user !== null && $user->status === 'PENDING') {
+        if ($user !== null
+            && $user->status === 'PENDING'
+            && $user->password_set_at === null
+            && $user->patient()->exists()) {
             $this->activationService->issueFor($user);
         }
 
         return response()->json([
             'data' => null,
             'message' => 'If the account exists and is pending, a new code has been sent.',
+            'errors' => null,
+        ], Response::HTTP_OK);
+    }
+
+    public function verifyCode(VerifyActivationCodeRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $result = $this->activationService->verifyPatientCode($data['email'], $data['code']);
+
+        if ($result === null) {
+            return response()->json([
+                'data' => null,
+                'message' => 'The activation code is invalid or has expired.',
+                'errors' => ['code' => 'INVALID_ACTIVATION_CODE'],
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return response()->json([
+            'data' => $result,
+            'message' => 'Activation code verified.',
+            'errors' => null,
+        ], Response::HTTP_OK);
+    }
+
+    public function setPassword(SetInitialPasswordRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $completed = $this->activationService->setPatientInitialPassword(
+            $data['activation_token'],
+            $data['password'],
+        );
+
+        if (! $completed) {
+            return response()->json([
+                'data' => null,
+                'message' => 'The activation token is invalid or has expired.',
+                'errors' => ['code' => 'INVALID_ACTIVATION_TOKEN'],
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
+        return response()->json([
+            'data' => ['activation_completed' => true],
+            'message' => 'Password created successfully.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

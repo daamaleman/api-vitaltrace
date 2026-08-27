@@ -7,11 +7,13 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use App\Notifications\PasswordResetToken;
 
 class User extends Authenticatable
 {
@@ -19,6 +21,17 @@ class User extends Authenticatable
     use HasFactory;
     use Notifiable;
     use SoftDeletes;
+
+    /**
+     * Send the API password-reset token using the configured mailer.
+     */
+    public function sendPasswordResetNotification($token): void
+    {
+        $this->notify(new PasswordResetToken(
+            (string) $token,
+            (int) config('auth.passwords.users.expire', 60),
+        ));
+    }
 
     /**
      * The database table associated with the model.
@@ -36,6 +49,7 @@ class User extends Authenticatable
         'person_id',
         'email',
         'password',
+        'password_set_at',
         'status',
         'email_verified_at',
         'last_access_at',
@@ -67,6 +81,7 @@ class User extends Authenticatable
         'blocked_until' => 'datetime',
         'failed_attempts' => 'integer',
         'password' => 'hashed',
+        'password_set_at' => 'datetime',
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
         'deleted_at' => 'datetime',
@@ -126,6 +141,14 @@ class User extends Authenticatable
     public function relative(): HasOne
     {
         return $this->hasOne(Relative::class, 'person_id', 'person_id');
+    }
+
+    /**
+     * Internal application notifications addressed to this account.
+     */
+    public function appNotifications(): HasMany
+    {
+        return $this->hasMany(AppNotification::class, 'user_id');
     }
 
     /**
