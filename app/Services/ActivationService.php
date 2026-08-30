@@ -15,22 +15,23 @@ class ActivationService
     public function issueFor(User $user): AccountActivation
     {
         return DB::transaction(function () use ($user): AccountActivation {
+            
+            // 1. Invalidar activaciones previas seg¨²n tu nueva l¨®gica
             AccountActivation::query()
                 ->where('user_id', $user->id)
                 ->where(function ($query): void {
                     $query->where('status', 'PENDING')
                         ->orWhere(function ($tokenQuery): void {
-                            $tokenQuery->whereNotNull('activation_token_hash')
-                                ->whereNull('activation_token_used_at');
+                            $tokenQuery->whereNotNull('code_hash')
+                                ->whereNull('used_at');
                         });
                 })
                 ->update([
                     'status' => 'INVALIDATED',
-                    'activation_token_hash' => null,
-                    'activation_token_expires_at' => null,
                     'updated_at' => now(),
                 ]);
 
+            // 2. Generar un nuevo c¨®digo y crear el nuevo registro
             $plainCode = $this->generateCode();
             $activation = AccountActivation::create([
                 'user_id' => $user->id,
@@ -41,6 +42,7 @@ class ActivationService
                 'status' => 'PENDING',
             ]);
 
+            // 3. Notificar al usuario con el c¨®digo en texto plano
             DB::afterCommit(function () use ($user, $plainCode): void {
                 $user->notify(new AccountActivationCode(
                     $plainCode,

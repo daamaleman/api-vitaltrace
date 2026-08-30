@@ -12,6 +12,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
+use App\Models\Role;
+use App\Models\User;
+use App\Services\ActivationService;
 
 /**
  * Admission-side relative management (§8.2, RN-03).
@@ -24,6 +27,10 @@ class AdmissionRelativeController extends Controller
     /**
      * List the relatives linked to a given patient.
      */
+    public function __construct(private ActivationService $activationService)
+    {
+    }
+
     public function index(Patient $patient): JsonResponse
     {
         $links = PatientRelative::with('relative.person')
@@ -53,17 +60,17 @@ class AdmissionRelativeController extends Controller
             'identity_document' => ['nullable', 'string', 'max:40'],
             'phone' => ['nullable', 'string', 'max:25'],
             'relationship' => ['required', 'string', 'max:50'],
+            'email' => ['required', 'email', 'max:180', 'unique:users,email'],
         ]);
 
         // RN-03: maximum two active (PENDING/ACTIVE) relatives per patient.
         $activeCount = PatientRelative::where('patient_id', $patient->id)
             ->whereIn('status', PatientRelative::ACTIVE_STATUSES)
             ->count();
-
         if ($activeCount >= 2) {
             return response()->json([
                 'data' => null,
-                'message' => 'The patient already has the maximum of two active relatives.',
+                'message' => 'El paciente ya tiene el máximo de dos familiares activos.',
                 'errors' => ['patient_id' => ['Maximum of two active relatives reached.']],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
@@ -82,7 +89,7 @@ class AdmissionRelativeController extends Controller
 
             $relative = Relative::create(['person_id' => $person->id]);
 
-            return PatientRelative::create([
+            $link = PatientRelative::create([
                 'patient_id' => $patient->id,
                 'relative_id' => $relative->id,
                 'relationship' => $data['relationship'],
@@ -90,14 +97,34 @@ class AdmissionRelativeController extends Controller
                 'start_date' => now()->toDateString(),
                 'registered_by' => $request->user()->id,
             ]);
+
+            // Create the relative's login account and send the activation code.
+            $user = User::create([
+                'person_id' => $person->id,
+                'email' => mb_strtolower(trim($data['email'])),
+                'password' => null,
+                'status' => 'PENDING',
+            ]);
+
+            $relativeRole = Role::query()->where('name', 'RELATIVE')->firstOrFail();
+            $user->roles()->attach($relativeRole->id, [
+                'active' => true,
+                'assigned_at' => now(),
+                'assigned_by' => $request->user()?->id,
+            ]);
+
+            $this->activationService->issueFor($user);
+
+            return $link;
         });
 
         return response()->json([
             'data' => $link->load('relative.person'),
-            'message' => 'Familiar registrado correctamente.',
+            'message' => 'Familiar registrado. Se envió el código de activación a su correo.',
             'errors' => null,
         ], Response::HTTP_CREATED);
-    }
+    }    
+
 
     /**
      * Revoke a patient-relative link (soft state change, keeps history).
