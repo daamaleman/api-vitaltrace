@@ -103,6 +103,7 @@ class AdmissionRelativeController extends Controller
                 'person_id' => $person->id,
                 'email' => mb_strtolower(trim($data['email'])),
                 'password' => null,
+                'password_set_at' => null,
                 'status' => 'PENDING',
             ]);
 
