@@ -16,7 +16,7 @@ class ActivationService
     {
         return DB::transaction(function () use ($user): AccountActivation {
             
-            // 1. Invalidar activaciones previas seg¨²n tu nueva l¨®gica
+            // Invalidar activaciones previas
             AccountActivation::query()
                 ->where('user_id', $user->id)
                 ->where(function ($query): void {
@@ -31,7 +31,6 @@ class ActivationService
                     'updated_at' => now(),
                 ]);
 
-            // 2. Generar un nuevo c¨®digo y crear el nuevo registro
             $plainCode = $this->generateCode();
             $activation = AccountActivation::create([
                 'user_id' => $user->id,
@@ -42,7 +41,6 @@ class ActivationService
                 'status' => 'PENDING',
             ]);
 
-            // 3. Notificar al usuario con el c¨®digo en texto plano
             DB::afterCommit(function () use ($user, $plainCode): void {
                 $user->notify(new AccountActivationCode(
                     $plainCode,
@@ -62,7 +60,6 @@ class ActivationService
                 ->where('email', $email)
                 ->where('status', 'PENDING')
                 ->whereNull('password_set_at')
-                ->whereHas('patient')
                 ->first();
 
             if ($user === null) {
@@ -133,7 +130,6 @@ class ActivationService
                 ->whereKey($activation->user_id)
                 ->where('status', 'PENDING')
                 ->whereNull('password_set_at')
-                ->whereHas('patient')
                 ->lockForUpdate()
                 ->first();
 

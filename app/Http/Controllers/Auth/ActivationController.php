@@ -63,8 +63,7 @@ class ActivationController extends Controller
 
         if ($user !== null
             && $user->status === 'PENDING'
-            && $user->password_set_at === null
-            && $user->patient()->exists()) {
+            && $user->password_set_at === null) {
             $this->activationService->issueFor($user);
         }
 
