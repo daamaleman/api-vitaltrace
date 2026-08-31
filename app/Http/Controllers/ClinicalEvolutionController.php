@@ -11,12 +11,17 @@ use App\Models\ClinicalEvolution;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use App\Http\Controllers\Concerns\ResolvesAssignedPatients;
+use App\Models\Patient;
+use Illuminate\Http\Request;
 
 /**
  * CRUD endpoints for clinical evolution entries.
  */
 class ClinicalEvolutionController extends Controller
 {
+    use ResolvesAssignedPatients;
+
     /**
      * List paginated clinical evolutions with their patient.
      */
@@ -28,6 +33,40 @@ class ClinicalEvolutionController extends Controller
     }
 
     /**
+     * Register a clinical evolution for an assigned patient (RN-06 scoped).
+     */
+    public function storeForPatient(Request $request, Patient $patient): JsonResponse
+    {
+        if (! $this->assignedPatientIds($request)->contains($patient->id)) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No tienes permiso para registrar en este paciente.',
+                'errors' => null,
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        $data = $request->validate([
+            'clinical_summary' => ['required', 'string', 'max:2000'],
+            'status' => ['required', 'string', 'in:STABLE,OBSERVATION,DELICATE,CRITICAL,RECOVERY'],
+            'recorded_at' => ['required', 'date'],
+        ]);
+
+        $evolution = ClinicalEvolution::create([
+            'patient_id' => $patient->id,
+            'registered_by' => $request->user()->id,
+            'clinical_summary' => $data['clinical_summary'],
+            'status' => $data['status'],
+            'recorded_at' => $data['recorded_at'],
+        ]);
+
+        return response()->json([
+            'data' => new ClinicalEvolutionResource($evolution),
+            'message' => 'Evolución clínica registrada correctamente.',
+            'errors' => null,
+        ], Response::HTTP_CREATED);
+    }
+
+    /**
      * Register a new clinical evolution entry.
      */
     public function store(StoreClinicalEvolutionRequest $request): JsonResponse
@@ -35,7 +74,7 @@ class ClinicalEvolutionController extends Controller
         $evolution = ClinicalEvolution::create($request->validated());
 
         return response()->json([
-            'data' => new ClinicalEvolutionResource($evolution->load('patient')),
+            'data' => new ClinicalEvolutionResource($evolution),
             'message' => 'Clinical evolution registered successfully.',
             'errors' => null,
         ], Response::HTTP_CREATED);

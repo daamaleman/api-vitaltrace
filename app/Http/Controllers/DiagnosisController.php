@@ -9,6 +9,7 @@ use App\Http\Requests\StoreDiagnosisRequest;
 use App\Http\Requests\UpdateDiagnosisRequest;
 use App\Http\Resources\DiagnosisResource;
 use App\Models\Diagnosis;
+use App\Models\Patient;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -33,6 +34,42 @@ class DiagnosisController extends Controller
             ->paginate(15);
 
         return DiagnosisResource::collection($diagnoses);
+    }
+
+    /**
+     * Register a new diagnosis for an assigned patient (RN-06 scoped).
+     */
+    public function storeForPatient(Request $request, Patient $patient): JsonResponse
+    {
+        if (! $this->assignedPatientIds($request)->contains($patient->id)) {
+            return response()->json([
+                'data' => null,
+                'message' => 'No tienes permiso para registrar en este paciente.',
+                'errors' => null,
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        $data = $request->validate([
+            'cie_code' => ['nullable', 'string', 'max:20'],
+            'description' => ['required', 'string', 'max:2000'],
+            'diagnosis_date' => ['required', 'date'],
+            'status' => ['required', 'string', 'in:ACTIVE,RESOLVED,UNDER_REVIEW'],
+        ]);
+
+        $diagnosis = Diagnosis::create([
+            'patient_id' => $patient->id,
+            'registered_by' => $request->user()->id,
+            'cie_code' => $data['cie_code'] ?? null,
+            'description' => $data['description'],
+            'diagnosis_date' => $data['diagnosis_date'],
+            'status' => $data['status'],
+        ]);
+
+        return response()->json([
+            'data' => new DiagnosisResource($diagnosis),
+            'message' => 'Diagnóstico registrado correctamente.',
+            'errors' => null,
+        ], Response::HTTP_CREATED);
     }
 
     /**

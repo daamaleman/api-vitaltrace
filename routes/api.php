@@ -40,6 +40,9 @@ use App\Http\Controllers\AdmissionAccountController;
 use App\Http\Controllers\AdmissionCorrectionController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminUserRoleController;
+use App\Http\Controllers\ClinicalEvolutionController;
+use App\Http\Controllers\ClinicalRangeController;
+use App\Http\Controllers\TreatmentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -153,6 +156,12 @@ Route::prefix('v1')->group(function () {
         Route::get('clinical/patients/{patient}', [ClinicalPatientController::class, 'show']);
         Route::get('clinical/patients/{patient}/summary', [ClinicalPatientController::class, 'summary']);
         Route::get('clinical/appointments', [ClinicalPatientController::class, 'appointments']);
+
+        // Clinical records specifically assigned to the patient
+        Route::post('clinical/patients/{patient}/evolutions', [ClinicalEvolutionController::class, 'storeForPatient']);
+        Route::post('clinical/patients/{patient}/diagnoses', [DiagnosisController::class, 'storeForPatient']);
+        Route::post('clinical/patients/{patient}/ranges', [ClinicalRangeController::class, 'storeForPatient']);
+        Route::post('clinical/patients/{patient}/treatments', [TreatmentController::class, 'storeForPatient']);
     });
 
     // System administration and catalogs.
@@ -176,7 +185,7 @@ Route::prefix('v1')->group(function () {
         Route::get('admin/users', [AdminUserController::class, 'index']);
         Route::post('admin/users/{user}/block', [AdminUserController::class, 'block']);
         Route::post('admin/users/{user}/unblock', [AdminUserController::class, 'unblock']);
-                Route::get('admin/users/{user}/roles', [AdminUserRoleController::class, 'index']);
+        Route::get('admin/users/{user}/roles', [AdminUserRoleController::class, 'index']);
         Route::post('admin/users/{user}/roles', [AdminUserRoleController::class, 'assign']);
         Route::delete('admin/users/{user}/roles/{role}', [AdminUserRoleController::class, 'revoke']);
     });
