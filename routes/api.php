@@ -31,6 +31,7 @@ use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\Portal\PatientPortalController;
 use App\Http\Controllers\Portal\PatientNotificationController;
 use App\Http\Controllers\Portal\PatientRelativeAccessController;
+use App\Http\Controllers\Portal\RelativePortalController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AdmissionPatientController;
 use App\Http\Controllers\ClinicalPatientController;
@@ -95,6 +96,17 @@ Route::prefix('v1')->group(function () {
             Route::get('relatives', [PatientRelativeAccessController::class, 'index']);
             Route::put('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'grant']);
             Route::delete('relatives/{patientRelative}/authorize', [PatientRelativeAccessController::class, 'revoke']);
+        });
+
+        // Relative portal: read-only access, additionally scoped per requested patient.
+        Route::middleware('role:RELATIVE')->prefix('relative')->group(function () {
+            Route::get('patients', [RelativePortalController::class, 'patients']);
+            Route::get('patients/{patientId}/summary', [RelativePortalController::class, 'summary'])->whereNumber('patientId');
+            Route::get('patients/{patientId}/profile', [RelativePortalController::class, 'profile'])->whereNumber('patientId');
+            Route::get('patients/{patientId}/appointments', [RelativePortalController::class, 'appointments'])->whereNumber('patientId');
+            Route::get('patients/{patientId}/measurements', [RelativePortalController::class, 'measurements'])->whereNumber('patientId');
+            Route::get('patients/{patientId}/treatments', [RelativePortalController::class, 'treatments'])->whereNumber('patientId');
+            Route::get('patients/{patientId}/clinical-history', [RelativePortalController::class, 'clinicalHistory'])->whereNumber('patientId');
         });
 
         // Alert workflow: nurses and doctors classify/escalate; only doctors close.
