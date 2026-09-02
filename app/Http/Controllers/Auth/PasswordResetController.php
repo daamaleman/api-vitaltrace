@@ -8,25 +8,27 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ForgotPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
 use App\Models\User;
-use Illuminate\Auth\Events\PasswordReset;
+use App\Services\PasswordResetService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
-use Illuminate\Support\Str;
-use Throwable;
 
 class PasswordResetController extends Controller
 {
     private const GENERIC_FORGOT_MESSAGE =
-        'If an account exists for that email, password reset instructions have been sent.';
+        'Si existe una cuenta con ese correo, se ha enviado un código para restablecer la contraseña.';
+
+    public function __construct(private PasswordResetService $service)
+    {
+    }
 
     public function forgot(ForgotPasswordRequest $request): JsonResponse
     {
-        try {
-            Password::broker()->sendResetLink($request->validated());
-        } catch (Throwable) {
-            // The public response intentionally remains identical to prevent account enumeration.
+        $email = $request->validated()['email'];
+        $user = User::where('email', $email)->first();
+
+        // Only issue for existing accounts; response stays generic to prevent enumeration.
+        if ($user !== null) {
+            $this->service->issueFor($user);
         }
 
         return response()->json([
@@ -38,29 +40,20 @@ class PasswordResetController extends Controller
 
     public function reset(ResetPasswordRequest $request): JsonResponse
     {
-        $status = Password::broker()->reset(
-            $request->validated(),
-            function (User $user, string $password): void {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                    'remember_token' => Str::random(60),
-                ])->save();
+        $data = $request->validated();
+        $ok = $this->service->resetWithCode($data['email'], $data['code'], $data['password']);
 
-                event(new PasswordReset($user));
-            }
-        );
-
-        if ($status !== Password::PASSWORD_RESET) {
+        if (! $ok) {
             return response()->json([
                 'data' => null,
-                'message' => 'The password reset token is invalid or has expired.',
-                'errors' => null,
+                'message' => 'El código no es válido o ha expirado.',
+                'errors' => ['code' => 'INVALID_RESET_CODE'],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         return response()->json([
             'data' => null,
-            'message' => 'Password reset successfully.',
+            'message' => 'Contraseña restablecida correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
