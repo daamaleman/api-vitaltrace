@@ -170,6 +170,7 @@ Route::prefix('v1')->group(function () {
         
         // Appointment endpoints for clinicians
         Route::get('clinical/appointments', [ClinicalPatientController::class, 'appointments']);
+        Route::get('clinical/patients/{patient}/appointments-list', [ClinicalPatientController::class, 'patientAppointments']);
         Route::post('clinical/patients/{patient}/appointments', [ClinicalPatientController::class, 'storeAppointment']);
         Route::put('clinical/appointments/{appointment}', [ClinicalPatientController::class, 'updateAppointment']);
         Route::post('clinical/appointments/{appointment}/status', [ClinicalPatientController::class, 'appointmentStatus']);

@@ -139,7 +139,7 @@ class ClinicalPatientController extends Controller
             ], Response::HTTP_OK);
         }
 
-        $appointments = \App\Models\Appointment::where('health_staff_id', $staff->id)
+        $appointments = Appointment::where('health_staff_id', $staff->id)
             ->with('patient.person')
             ->orderBy('scheduled_at')
             ->get();
@@ -148,6 +148,47 @@ class ClinicalPatientController extends Controller
             'data' => $appointments,
             'message' => null,
             'errors' => null,
+        ], Response::HTTP_OK);
+    }
+
+    /**
+     * List appointments for an assigned patient (RN-06 scoped).
+     */
+    public function patientAppointments(Request $request, Patient $patient): JsonResponse
+    {
+        $staff = $this->resolveStaff($request);
+        
+        if ($staff === null) {
+            return response()->json([
+                'data' => [], 
+                'message' => 'Sin perfil clínico vinculado.', 
+                'errors' => null
+            ], Response::HTTP_OK);
+        }
+
+        // RN-06: el paciente debe estar asignado a este profesional.
+        $assigned = \App\Models\ProfessionalAssignment::where('patient_id', $patient->id)
+            ->where('health_staff_id', $staff->id)
+            ->where('status', 'ACTIVE')
+            ->exists();
+
+        if (! $assigned) {
+            return response()->json([
+                'data' => null, 
+                'message' => 'No tienes permiso para ver las citas de este paciente.', 
+                'errors' => null
+            ], Response::HTTP_FORBIDDEN);
+        }
+
+        $appointments = Appointment::where('patient_id', $patient->id)
+            ->where('health_staff_id', $staff->id)
+            ->orderBy('scheduled_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $appointments, 
+            'message' => null, 
+            'errors' => null
         ], Response::HTTP_OK);
     }
 
