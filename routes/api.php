@@ -39,6 +39,7 @@ use App\Http\Controllers\AdmissionRelativeController;
 use App\Http\Controllers\AdmissionAssignmentController;
 use App\Http\Controllers\AdmissionAccountController;
 use App\Http\Controllers\AdmissionCorrectionController;
+use App\Http\Controllers\AdmissionAppointmentController;
 use App\Http\Controllers\AdminUserController;
 use App\Http\Controllers\AdminUserRoleController;
 use App\Http\Controllers\ClinicalEvolutionController;
@@ -132,6 +133,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('patient-relatives', PatientRelativeController::class);
         Route::apiResource('professional-assignments', ProfessionalAssignmentController::class);
         Route::apiResource('correction-requests', CorrectionRequestController::class);
+        
         Route::get('admission/patients', [AdmissionPatientController::class, 'index']);
         Route::get('admission/patients/{patient}', [AdmissionPatientController::class, 'show']);
         Route::post('admission/patients', [AdmissionPatientController::class, 'store']);
@@ -152,6 +154,12 @@ Route::prefix('v1')->group(function () {
         Route::get('admission/corrections', [AdmissionCorrectionController::class, 'index']);
         Route::post('admission/corrections/{correctionRequest}/approve', [AdmissionCorrectionController::class, 'approve']);
         Route::post('admission/corrections/{correctionRequest}/reject', [AdmissionCorrectionController::class, 'reject']);
+
+        // Appointment management for admission
+        Route::get('admission/appointments', [AdmissionAppointmentController::class, 'index']);
+        Route::post('admission/appointments', [AdmissionAppointmentController::class, 'store']);
+        Route::put('admission/appointments/{appointment}', [AdmissionAppointmentController::class, 'update']);
+        Route::post('admission/appointments/{appointment}/status', [AdmissionAppointmentController::class, 'status']);
     });
 
     // Clinical work for doctors and nurses.
