@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Patient extends Model
@@ -62,6 +63,34 @@ class Patient extends Model
     public function professionalAssignments(): HasMany
     {
         return $this->hasMany(ProfessionalAssignment::class);
+    }
+
+    public function appointments(): HasMany
+    {
+        return $this->hasMany(Appointment::class);
+    }
+
+    public function measurements(): HasMany
+    {
+        return $this->hasMany(Measurement::class);
+    }
+
+    public function latestMeasurement(): HasOne
+    {
+        return $this->hasOne(Measurement::class)->latestOfMany('measured_at');
+    }
+
+    public function nextAppointment(): HasOne
+    {
+        return $this->hasOne(Appointment::class)
+            ->whereIn('status', ['SCHEDULED', 'CONFIRMED'])
+            ->where('scheduled_at', '>', now())
+            ->orderBy('scheduled_at');
+    }
+
+    public function alerts(): HasMany
+    {
+        return $this->hasMany(Alert::class);
     }
 
     /**
