@@ -32,6 +32,7 @@ use App\Http\Controllers\Portal\PatientPortalController;
 use App\Http\Controllers\Portal\PatientNotificationController;
 use App\Http\Controllers\Portal\PatientRelativeAccessController;
 use App\Http\Controllers\Portal\RelativePortalController;
+use App\Http\Controllers\Portal\NursePortalController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\AdmissionPatientController;
 use App\Http\Controllers\ClinicalPatientController;
@@ -110,14 +111,36 @@ Route::prefix('v1')->group(function () {
             Route::get('patients/{patientId}/clinical-history', [RelativePortalController::class, 'clinicalHistory'])->whereNumber('patientId');
         });
 
-        // Alert workflow: nurses and doctors classify/escalate; only doctors close.
-        Route::middleware('role:DOCTOR,NURSE')->group(function () {
+        // Legacy professional alert actions remain doctor-only. Nurses use the
+        // assignment-scoped /nurse surface below.
+        Route::middleware('role:DOCTOR')->group(function () {
             Route::post('alerts/{alert}/classify', [AlertActionController::class, 'classify']);
             Route::post('alerts/{alert}/escalate', [AlertActionController::class, 'escalate']);
         });
 
         Route::middleware('role:DOCTOR')->group(function () {
             Route::post('alerts/{alert}/close', [AlertActionController::class, 'close']);
+        });
+
+        Route::middleware('role:NURSE')->prefix('nurse')->group(function () {
+            Route::get('summary', [NursePortalController::class, 'dashboard']);
+            Route::get('patients', [NursePortalController::class, 'patients']);
+            Route::get('patients/{patient}/profile', [NursePortalController::class, 'profile']);
+            Route::get('patients/{patient}/summary', [NursePortalController::class, 'patientSummary']);
+            Route::get('patients/{patient}/appointments', [NursePortalController::class, 'patientAppointments']);
+            Route::get('patients/{patient}/measurements', [NursePortalController::class, 'measurements']);
+            Route::post('patients/{patient}/measurements', [NursePortalController::class, 'storeMeasurement']);
+            Route::get('patients/{patient}/diagnoses', [NursePortalController::class, 'diagnoses']);
+            Route::get('patients/{patient}/treatments', [NursePortalController::class, 'treatments']);
+            Route::get('patients/{patient}/clinical-history', [NursePortalController::class, 'clinicalHistory']);
+            Route::get('patients/{patient}/alerts', [NursePortalController::class, 'patientAlerts']);
+            Route::get('appointments', [NursePortalController::class, 'appointments']);
+            Route::get('appointments/{appointment}', [NursePortalController::class, 'appointment']);
+            Route::get('measurement-types', [NursePortalController::class, 'measurementTypes']);
+            Route::get('alerts', [NursePortalController::class, 'alerts']);
+            Route::get('alerts/{alert}', [NursePortalController::class, 'alert']);
+            Route::post('alerts/{alert}/classify', [NursePortalController::class, 'classifyAlert']);
+            Route::post('alerts/{alert}/escalate', [NursePortalController::class, 'escalateAlert']);
         });
     });
 
@@ -162,8 +185,9 @@ Route::prefix('v1')->group(function () {
         Route::post('admission/appointments/{appointment}/status', [AdmissionAppointmentController::class, 'status']);
     });
 
-    // Clinical work for doctors and nurses.
-    Route::middleware(['auth:sanctum', 'role:DOCTOR,NURSE'])->group(function () {
+    // Legacy generic clinical mutation surface is doctor-only. Nurse access is
+    // exposed exclusively through the scoped /nurse portal above.
+    Route::middleware(['auth:sanctum', 'role:DOCTOR'])->group(function () {
         // Filtered by assigned patients (RN-06) — see AlertController::index()
         // and DiagnosisController::index().
         Route::apiResource('diagnoses', DiagnosisController::class);
