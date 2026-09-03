@@ -7,6 +7,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 /**
@@ -78,6 +79,11 @@ class Treatment extends Model
     public function prescribedBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'prescribed_by');
+    }
+
+    public function treatmentMedications(): HasMany
+    {
+        return $this->hasMany(TreatmentMedication::class);
     }
 
     /**
