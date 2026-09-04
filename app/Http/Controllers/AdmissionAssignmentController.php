@@ -61,6 +61,16 @@ class AdmissionAssignmentController extends Controller
             'assignment_type' => ['required', 'string', 'in:PRIMARY_DOCTOR,SECONDARY_DOCTOR,NURSE'],
         ]);
 
+        $staff = HealthStaff::query()->findOrFail($data['health_staff_id']);
+        $expectedType = $data['assignment_type'] === 'NURSE' ? 'NURSE' : 'DOCTOR';
+        if ($staff->professional_type !== $expectedType) {
+            return response()->json([
+                'data' => null,
+                'message' => 'El tipo de asignación no corresponde al tipo de profesional.',
+                'errors' => ['assignment_type' => ['Professional type and assignment type are incompatible.']],
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
+        }
+
         // Single active primary doctor per patient.
         if ($data['assignment_type'] === 'PRIMARY_DOCTOR') {
             $hasPrimary = ProfessionalAssignment::where('patient_id', $patient->id)

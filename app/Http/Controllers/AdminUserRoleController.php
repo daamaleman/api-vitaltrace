@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Role;
 use App\Models\User;
+use App\Services\ProfessionalRegistrationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -49,7 +50,7 @@ class AdminUserRoleController extends Controller
     /**
      * Assign a role to a user (idempotent: reactivates if previously revoked).
      */
-    public function assign(Request $request, User $user): JsonResponse
+    public function assign(Request $request, User $user, ProfessionalRegistrationService $professionalRegistration): JsonResponse
     {
         $data = $request->validate([
             'role_id' => ['required', 'integer', 'exists:roles,id'],
@@ -68,6 +69,8 @@ class AdminUserRoleController extends Controller
                 'errors' => ['role_id' => ['Already assigned.']],
             ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
+
+        $professionalRegistration->assertRoleAssignmentAllowed($user, $role->name);
 
         DB::transaction(function () use ($user, $role, $adminId) {
             // Reactivate a previously revoked row, or attach a new one.
