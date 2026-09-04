@@ -46,6 +46,7 @@ use App\Http\Controllers\AdminUserRoleController;
 use App\Http\Controllers\ClinicalEvolutionController;
 use App\Http\Controllers\ClinicalRangeController;
 use App\Http\Controllers\TreatmentController;
+use App\Http\Controllers\ProfessionalRegistrationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -224,6 +225,7 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('administrative-staff', AdministrativeStaffController::class);
         Route::apiResource('specialties', SpecialtyController::class);
         Route::apiResource('health-staff', HealthStaffController::class);
+        Route::post('admin/professionals/register', [ProfessionalRegistrationController::class, 'store']);
         Route::apiResource('medications', MedicationController::class);
         Route::apiResource('measurement-types', MeasurementTypeController::class);
         Route::apiResource('account-activations', AccountActivationController::class);
