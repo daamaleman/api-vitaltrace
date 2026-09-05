@@ -210,6 +210,53 @@ final class NursePortalTest extends TestCase
         $this->assertSame($appointment->id, $patients[$patient->id]['next_appointment']['id']);
         $this->assertNull($patients[$withoutAppointment->id]['next_appointment']);
     }
+
+    public function test_nurse_reads_assigned_patient_appointments_attended_by_other_professionals(): void
+    {
+        [$nurse, $staff] = $this->nurse();
+        $patient = $this->patient('Assigned With Doctor');
+        $unassigned = $this->patient('Unassigned With Doctor');
+        $this->assign($staff, $patient);
+
+        $doctorStaff = $this->staff($this->userWithRole('DOCTOR'), 'DOCTOR');
+        $doctorAppointment = $this->appointment($patient, $doctorStaff);
+        $foreignDoctorAppointment = $this->appointment($unassigned, $doctorStaff);
+
+        Sanctum::actingAs($nurse);
+
+        // Nurse-wide list surfaces the doctor-attended appointment for the assigned patient.
+        $this->getJson('/api/v1/nurse/appointments')->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $doctorAppointment->id)
+            ->assertJsonPath('data.0.patient_id', $patient->id)
+            ->assertJsonPath('data.0.professional.professional_type', 'DOCTOR');
+
+        // Patient-specific list surfaces it too.
+        $this->getJson("/api/v1/nurse/patients/{$patient->id}/appointments")->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.id', $doctorAppointment->id);
+
+        // Appointment detail is accessible.
+        $this->getJson("/api/v1/nurse/appointments/{$doctorAppointment->id}")->assertOk()
+            ->assertJsonPath('data.id', $doctorAppointment->id)
+            ->assertJsonPath('data.professional.professional_type', 'DOCTOR');
+
+        // Dashboard and patient summary upcoming-appointment blocks surface it.
+        $this->getJson('/api/v1/nurse/summary')->assertOk()
+            ->assertJsonPath('data.appointments.upcoming_count', 1)
+            ->assertJsonPath('data.appointments.next.0.id', $doctorAppointment->id);
+        $this->getJson("/api/v1/nurse/patients/{$patient->id}/summary")->assertOk()
+            ->assertJsonPath('data.upcoming_appointment.id', $doctorAppointment->id);
+
+        // patients() next_appointment relation surfaces it.
+        $patients = collect($this->getJson('/api/v1/nurse/patients')->assertOk()->json('data'))->keyBy('patient_id');
+        $this->assertSame($doctorAppointment->id, $patients[$patient->id]['next_appointment']['id']);
+
+        // Authorization boundary preserved: unassigned patient's appointment stays inaccessible.
+        $this->getJson("/api/v1/nurse/appointments/{$foreignDoctorAppointment->id}")->assertForbidden();
+        $this->getJson("/api/v1/nurse/patients/{$unassigned->id}/appointments")->assertForbidden();
+    }
+
     public function test_measurement_creation_derives_identity_and_rejects_tampering(): void
     {
         [$nurse, $staff] = $this->nurse();

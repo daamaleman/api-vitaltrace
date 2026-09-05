@@ -25,7 +25,6 @@ use App\Models\Patient;
 use App\Models\Treatment;
 use App\Services\Portal\NursePatientAccessService;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -50,7 +49,6 @@ final class NursePortalController extends Controller
         $alerts = Alert::query()->whereIn('patient_id', clone $patientIds);
         $appointments = Appointment::query()
             ->whereIn('patient_id', clone $patientIds)
-            ->where('health_staff_id', $staff->id)
             ->whereIn('status', ['SCHEDULED', 'CONFIRMED'])
             ->where('scheduled_at', '>', now());
 
@@ -81,7 +79,7 @@ final class NursePortalController extends Controller
     public function patients(Request $request): AnonymousResourceCollection
     {
         $user = $request->user();
-        $staff = $this->access->resolveNurse($user);
+        $this->access->resolveNurse($user);
         $search = trim((string) $request->query('search', ''));
 
         $query = $this->access->assignedPatientsQuery($user)
@@ -92,7 +90,7 @@ final class NursePortalController extends Controller
             ])
             ->with([
                 'latestMeasurement' => fn ($q) => $q->with('measurementType'),
-                'nextAppointment' => fn ($q) => $q->with(['healthStaff.person', 'healthStaff.specialty'])->where('health_staff_id', $staff->id),
+                'nextAppointment' => fn ($q) => $q->with(['healthStaff.person', 'healthStaff.specialty']),
             ]);
 
         if ($search !== '') {
@@ -121,12 +119,11 @@ final class NursePortalController extends Controller
     public function patientSummary(Request $request, Patient $patient): JsonResponse
     {
         $patient = $this->access->assertPatientAccess($request->user(), $patient)->load('person');
-        $staff = $this->access->resolveNurse($request->user());
 
         $measurements = Measurement::query()->with('measurementType')->where('patient_id', $patient->id)->latest('measured_at')->limit(7)->get();
         $diagnoses = Diagnosis::query()->where('patient_id', $patient->id)->latest('diagnosis_date')->limit(5)->get();
         $treatments = $this->treatmentsQuery($patient)->where('status', 'ACTIVE')->limit(5)->get();
-        $appointment = Appointment::query()->with(['healthStaff.person', 'healthStaff.specialty'])->where('patient_id', $patient->id)->where('health_staff_id', $staff->id)->whereIn('status', ['SCHEDULED', 'CONFIRMED'])->where('scheduled_at', '>', now())->orderBy('scheduled_at')->first();
+        $appointment = Appointment::query()->with(['healthStaff.person', 'healthStaff.specialty'])->where('patient_id', $patient->id)->whereIn('status', ['SCHEDULED', 'CONFIRMED'])->where('scheduled_at', '>', now())->orderBy('scheduled_at')->first();
         $alerts = Alert::query()->where('patient_id', $patient->id)->whereIn('status', self::OPEN_ALERT_STATUSES)->latest('generated_at')->limit(5)->get();
 
         return $this->response([
@@ -141,11 +138,10 @@ final class NursePortalController extends Controller
 
     public function appointments(Request $request): AnonymousResourceCollection
     {
-        $staff = $this->access->resolveNurse($request->user());
+        $this->access->resolveNurse($request->user());
 
         $items = Appointment::query()->with(['healthStaff.person', 'healthStaff.specialty'])
             ->whereIn('patient_id', $this->access->assignedPatientIds($request->user()))
-            ->where('health_staff_id', $staff->id)
             ->orderByDesc('scheduled_at')->paginate(15)->withQueryString();
 
         return NurseAppointmentResource::collection($items);
@@ -154,25 +150,16 @@ final class NursePortalController extends Controller
     public function patientAppointments(Request $request, Patient $patient): AnonymousResourceCollection
     {
         $patient = $this->access->assertPatientAccess($request->user(), $patient);
-        $staff = $this->access->resolveNurse($request->user());
 
         return NurseAppointmentResource::collection(Appointment::query()
             ->with(['healthStaff.person', 'healthStaff.specialty'])
-            ->where('patient_id', $patient->id)->where('health_staff_id', $staff->id)
+            ->where('patient_id', $patient->id)
             ->orderByDesc('scheduled_at')->paginate(15)->withQueryString());
     }
 
     public function appointment(Request $request, Appointment $appointment): JsonResponse
     {
         $this->access->assertPatientAccess($request->user(), $appointment->patient_id);
-        $staff = $this->access->resolveNurse($request->user());
-        if ($appointment->health_staff_id !== $staff->id) {
-            throw new HttpResponseException(response()->json([
-                'data' => null,
-                'message' => 'No tienes autorización para ver esta cita.',
-                'errors' => null,
-            ], Response::HTTP_FORBIDDEN));
-        }
 
         return $this->response(new NurseAppointmentResource($appointment->load(['healthStaff.person', 'healthStaff.specialty'])));
     }
