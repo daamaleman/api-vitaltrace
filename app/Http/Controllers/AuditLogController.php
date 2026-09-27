@@ -8,6 +8,7 @@ use App\Http\Requests\StoreAuditLogRequest;
 use App\Http\Resources\AuditLogResource;
 use App\Models\AuditLog;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
 
@@ -20,11 +21,21 @@ use Illuminate\Http\Response;
 class AuditLogController extends Controller
 {
     /**
-     * List paginated audit log entries with their acting user.
+     * List paginated audit log entries with optional filters
+     * (user, action, table, record and date range).
      */
-    public function index(): AnonymousResourceCollection
+    public function index(Request $request): AnonymousResourceCollection
     {
-        $logs = AuditLog::with('user')->latest('id')->paginate(15);
+        $logs = AuditLog::with('user')
+            ->when($request->filled('user_id'), fn ($q) => $q->where('user_id', $request->integer('user_id')))
+            ->when($request->filled('action'), fn ($q) => $q->where('action', $request->string('action')))
+            ->when($request->filled('table'), fn ($q) => $q->where('table', $request->string('table')))
+            ->when($request->filled('record_id'), fn ($q) => $q->where('record_id', $request->integer('record_id')))
+            ->when($request->filled('from'), fn ($q) => $q->whereDate('created_at', '>=', $request->date('from')))
+            ->when($request->filled('to'), fn ($q) => $q->whereDate('created_at', '<=', $request->date('to')))
+            ->latest('id')
+            ->paginate(15)
+            ->withQueryString();
 
         return AuditLogResource::collection($logs);
     }
