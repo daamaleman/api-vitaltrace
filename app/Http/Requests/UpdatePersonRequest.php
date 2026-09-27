@@ -37,7 +37,7 @@ class UpdatePersonRequest extends FormRequest
                 Rule::unique('people', 'identity_document')->ignore($this->person)
             ],
             'phone'             => ['nullable', 'string', 'max:25'],
-            'address'           => ['nullable', 'string'],
+            'address'           => ['nullable', 'string', 'max:200'],
         ];
     }
 }

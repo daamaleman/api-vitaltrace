@@ -44,7 +44,7 @@ class UpdatePatientRequest extends FormRequest
             // Validate the emergency contact phone when provided.
             'emergency_contact_phone' => ['sometimes', 'nullable', 'string', 'max:25'],
             // Validate optional administrative notes.
-            'administrative_notes' => ['sometimes', 'nullable', 'string'],
+            'administrative_notes' => ['sometimes', 'nullable', 'string', 'max:500'],
         ];
     }
 }

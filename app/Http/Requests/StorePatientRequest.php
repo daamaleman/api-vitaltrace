@@ -33,7 +33,7 @@ class StorePatientRequest extends FormRequest
             'administrative_status' => ['sometimes', 'string', 'in:PRE_REGISTERED,ACTIVE,INACTIVE,DISCHARGED,ARCHIVED'],
             'emergency_contact_name' => ['nullable', 'string', 'max:160'],
             'emergency_contact_phone' => ['nullable', 'string', 'max:25'],
-            'administrative_notes' => ['nullable', 'string'],
+            'administrative_notes' => ['nullable', 'string', 'max:500'],
             'registered_by' => ['required', 'integer', 'exists:users,id'],
         ];
     }

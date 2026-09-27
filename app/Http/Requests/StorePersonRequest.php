@@ -30,7 +30,7 @@ class StorePersonRequest extends FormRequest
             'gender'            => ['required', 'string', 'max:30'],
             'identity_document' => ['nullable', 'string', 'max:40', 'unique:people,identity_document'],
             'phone'             => ['nullable', 'string', 'max:25'],
-            'address'           => ['nullable', 'string'],
+            'address'           => ['nullable', 'string', 'max:200'],
         ];
     }
 }
