@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Support\Auditing\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -69,6 +70,8 @@ class AuthController extends Controller
         if ($this->isStatefulRequest($request)) {
             Auth::guard('web')->login($user, true);
             $request->session()->regenerate();
+            
+            AuditLogger::log('LOGIN');
 
             return response()->json([
                 'data' => [
@@ -82,6 +85,11 @@ class AuthController extends Controller
         // Mobile request: issue a Bearer token.
         $user->tokens()->delete();
         $token = $user->createToken('mobile-app')->plainTextToken;
+
+        // Note: For Bearer tokens, the request user isn't populated until the next request,
+        // but since login is successful, we can log it on behalf of the user model.
+        Auth::setUser($user);
+        AuditLogger::log('LOGIN');
 
         return response()->json([
             'data' => [
@@ -111,6 +119,9 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
+        // Registrar el LOGOUT antes de invalidar la sesión/token
+        AuditLogger::log('LOGOUT');
+        
         if ($this->isStatefulRequest($request)) {
             Auth::guard('web')->logout();
             $request->session()->invalidate();
