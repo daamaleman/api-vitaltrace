@@ -111,6 +111,9 @@ class ClinicalPatientController extends Controller
             ->with('measurementType')
             ->latest('measured_at')->limit(30)->get();
 
+        $ranges = \App\Models\ClinicalRange::where('patient_id', $patient->id)
+            ->latest('start_date')->get();
+
         return response()->json([
             'data' => [
                 'patient' => new PatientResource($patient),
@@ -118,6 +121,7 @@ class ClinicalPatientController extends Controller
                 'evolutions' => $evolutions,
                 'treatments' => $treatments,
                 'measurements' => $measurements,
+                'ranges' => $ranges,
             ],
             'message' => null,
             'errors' => null,
