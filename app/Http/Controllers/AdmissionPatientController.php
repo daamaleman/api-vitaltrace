@@ -30,10 +30,15 @@ class AdmissionPatientController extends Controller
         $query = Patient::with('person')->latest('id');
 
         if ($search = $request->query('search')) {
-            $query->whereHas('person', function ($q) use ($search) {
-                $q->where('first_name', 'like', "%{$search}%")
-                    ->orWhere('first_last_name', 'like', "%{$search}%");
-            })->orWhere('record_number', 'like', "%{$search}%");
+            $query->where(function ($outer) use ($search) {
+                $outer->whereHas('person', function ($q) use ($search) {
+                    $q->where('first_name', 'like', "%{$search}%")
+                        ->orWhere('middle_name', 'like', "%{$search}%")
+                        ->orWhere('first_last_name', 'like', "%{$search}%")
+                        ->orWhere('second_last_name', 'like', "%{$search}%")
+                        ->orWhere('identity_document', 'like', "%{$search}%");
+                })->orWhere('record_number', 'like', "%{$search}%");
+            });
         }
 
         return PatientResource::collection($query->paginate(15));
@@ -149,7 +154,7 @@ class AdmissionPatientController extends Controller
                 Rule::unique('people', 'identity_document')->ignore($personId),
             ],
             'phone' => ['nullable', 'string', 'max:25'],
-            'address' => ['nullable', 'string'],
+            'address' => ['nullable', 'string', 'max:200'],
             // Patient
             'record_number' => [
                 'required', 'string', 'max:30',

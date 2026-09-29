@@ -175,9 +175,11 @@ Route::prefix('v1')->group(function () {
         Route::post('admission/accounts/{user}/resend', [AdmissionAccountController::class, 'resend']);
         Route::post('admission/accounts/{user}/block', [AdmissionAccountController::class, 'block']);
         Route::post('admission/accounts/{user}/unblock', [AdmissionAccountController::class, 'unblock']);
+        
         Route::get('admission/corrections', [AdmissionCorrectionController::class, 'index']);
         Route::post('admission/corrections/{correctionRequest}/approve', [AdmissionCorrectionController::class, 'approve']);
         Route::post('admission/corrections/{correctionRequest}/reject', [AdmissionCorrectionController::class, 'reject']);
+        Route::post('admission/patients/{patient}/corrections', [AdmissionCorrectionController::class, 'correct']);
 
         // Appointment management for admission
         Route::get('admission/appointments', [AdmissionAppointmentController::class, 'index']);
