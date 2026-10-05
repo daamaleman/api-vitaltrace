@@ -55,6 +55,7 @@ class AuditLogger
         ?int $recordId = null,
         ?array $oldValues = null,
         ?array $newValues = null,
+        ?string $module = null,
     ): void {
         if (! self::$enabled) {
             return;
@@ -67,6 +68,7 @@ class AuditLogger
                 'user_id' => $user?->id,
                 'role_snapshot' => self::roleSnapshot($user),
                 'action' => $action,
+                'module' => $module,
                 'table' => $table,
                 'record_id' => $recordId,
                 'old_values' => self::redact($oldValues),
@@ -112,6 +114,30 @@ class AuditLogger
         $roles = $user->relationLoaded('roles') ? $user->roles : $user->roles()->get();
 
         return $roles->pluck('name')->implode(',') ?: null;
+    }
+
+    /**
+     * Human-readable portal name for the user's primary role.
+     */
+    public static function portalFor(?User $user): ?string
+    {
+        if ($user === null) {
+            return null;
+        }
+
+        $roles = $user->relationLoaded('roles')
+            ? $user->roles->pluck('name')->all()
+            : $user->roles()->pluck('name')->all();
+
+        return match (true) {
+            in_array('SYSTEM_ADMIN', $roles, true) => 'Portal administrativo',
+            in_array('DOCTOR', $roles, true)       => 'Portal médico',
+            in_array('NURSE', $roles, true)        => 'Portal de enfermería',
+            in_array('ADMISSION', $roles, true)    => 'Portal de admisión',
+            in_array('PATIENT', $roles, true)      => 'Portal del paciente',
+            in_array('RELATIVE', $roles, true)     => 'Portal del familiar',
+            default => null,
+        };
     }
 
     /**

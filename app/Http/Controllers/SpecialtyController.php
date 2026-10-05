@@ -8,6 +8,7 @@ use App\Http\Requests\StoreSpecialtyRequest;
 use App\Http\Requests\UpdateSpecialtyRequest;
 use App\Http\Resources\SpecialtyResource;
 use App\Models\Specialty;
+use App\Support\Auditing\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -19,6 +20,8 @@ class SpecialtyController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        AuditLogger::log('ACCESS', module: 'Catálogos');
+
         $specialties = Specialty::orderBy('name')->paginate(15);
 
         return SpecialtyResource::collection($specialties);

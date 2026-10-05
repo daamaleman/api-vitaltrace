@@ -41,6 +41,7 @@ class AuditLog extends Model
         'user_id',
         'role_snapshot',
         'action',
+        'module',
         'table',
         'record_id',
         'old_values',

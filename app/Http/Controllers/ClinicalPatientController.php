@@ -8,6 +8,7 @@ use App\Http\Resources\PatientResource;
 use App\Models\HealthStaff;
 use App\Models\Patient;
 use App\Models\Appointment;
+use App\Support\Auditing\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -95,6 +96,9 @@ class ClinicalPatientController extends Controller
                 'errors' => null,
             ], Response::HTTP_FORBIDDEN);
         }
+
+        // Registrar el acceso exitoso al expediente del paciente
+        AuditLogger::log('ACCESS', module: 'Expediente del paciente #'.$patient->id);
 
         $patient->load('person');
 

@@ -71,13 +71,13 @@ class AuthController extends Controller
             Auth::guard('web')->login($user, true);
             $request->session()->regenerate();
             
-            AuditLogger::log('LOGIN');
+            AuditLogger::log('LOGIN', module: AuditLogger::portalFor($user));
 
             return response()->json([
                 'data' => [
                     'user' => new UserResource($user->load('person', 'roles')),
                 ],
-                'message' => 'Sesi贸n iniciada correctamente.',
+                'message' => 'Sesión iniciada correctamente.',
                 'errors' => null,
             ], Response::HTTP_OK);
         }
@@ -89,7 +89,7 @@ class AuthController extends Controller
         // Note: For Bearer tokens, the request user isn't populated until the next request,
         // but since login is successful, we can log it on behalf of the user model.
         Auth::setUser($user);
-        AuditLogger::log('LOGIN');
+        AuditLogger::log('LOGIN', module: AuditLogger::portalFor($user));
 
         return response()->json([
             'data' => [
@@ -97,7 +97,7 @@ class AuthController extends Controller
                 'token' => $token,
                 'token_type' => 'Bearer',
             ],
-            'message' => 'Sesi贸n iniciada correctamente.',
+            'message' => 'Sesión iniciada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
@@ -119,8 +119,8 @@ class AuthController extends Controller
      */
     public function logout(Request $request): JsonResponse
     {
-        // Registrar el LOGOUT antes de invalidar la sesi贸n/token
-        AuditLogger::log('LOGOUT');
+        // Registrar el LOGOUT antes de invalidar la sesión/token
+        AuditLogger::log('LOGOUT', module: AuditLogger::portalFor($request->user()));
         
         if ($this->isStatefulRequest($request)) {
             Auth::guard('web')->logout();
@@ -132,7 +132,7 @@ class AuthController extends Controller
 
         return response()->json([
             'data' => null,
-            'message' => 'Sesi贸n cerrada correctamente.',
+            'message' => 'Sesión cerrada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }

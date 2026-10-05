@@ -8,6 +8,7 @@ use App\Http\Requests\StoreMedicationRequest;
 use App\Http\Requests\UpdateMedicationRequest;
 use App\Http\Resources\MedicationResource;
 use App\Models\Medication;
+use App\Support\Auditing\AuditLogger;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
@@ -22,6 +23,8 @@ class MedicationController extends Controller
      */
     public function index(): AnonymousResourceCollection
     {
+        AuditLogger::log('ACCESS', module: 'Catálogos');
+
         $medications = Medication::orderBy('generic_name')->paginate(15);
 
         return MedicationResource::collection($medications);
