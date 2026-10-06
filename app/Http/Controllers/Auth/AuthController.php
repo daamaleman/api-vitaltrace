@@ -77,7 +77,7 @@ class AuthController extends Controller
                 'data' => [
                     'user' => new UserResource($user->load('person', 'roles')),
                 ],
-                'message' => 'Sesi¨®n iniciada correctamente.',
+                'message' => 'SesiÃ³n iniciada correctamente.',
                 'errors' => null,
             ], Response::HTTP_OK);
         }
@@ -97,7 +97,7 @@ class AuthController extends Controller
                 'token' => $token,
                 'token_type' => 'Bearer',
             ],
-            'message' => 'Sesi¨®n iniciada correctamente.',
+            'message' => 'SesiÃ³n iniciada correctamente.',
             'errors' => null,
         ], Response::HTTP_OK);
     }
