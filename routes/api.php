@@ -63,9 +63,6 @@ Route::prefix('v1')->group(function () {
     // Public authentication and activation, rate-limited against brute force.
     Route::middleware('throttle:6,1')->group(function () {
         Route::post('auth/login', [AuthController::class, 'login']);
-        Route::post('auth/verify-2fa', [AuthController::class, 'verifyTwoFactor']);
-        Route::post('auth/resend-2fa', [AuthController::class, 'resendTwoFactor']);
-        
         Route::post('auth/activate-account', [ActivationController::class, 'activate']);
         Route::post('auth/resend-code', [ActivationController::class, 'resend']);
         Route::post('auth/activation/verify-code', [ActivationController::class, 'verifyCode']);
